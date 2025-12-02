@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, X } from "lucide-react"
+import { forwardRef } from "react"
 
 type FilterPanelProps = {
   searchQuery: string
@@ -12,7 +13,8 @@ type FilterPanelProps = {
   onTagsChange: (tags: string[]) => void
 }
 
-export function FilterPanel({ searchQuery, onSearchChange, allTags, selectedTags, onTagsChange }: FilterPanelProps) {
+export const FilterPanel = forwardRef<HTMLInputElement, FilterPanelProps>(
+  ({ searchQuery, onSearchChange, allTags, selectedTags, onTagsChange }, ref) => {
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
       onTagsChange(selectedTags.filter((t) => t !== tag))
@@ -26,6 +28,7 @@ export function FilterPanel({ searchQuery, onSearchChange, allTags, selectedTags
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
+          ref={ref}
           placeholder="Search documents..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -50,4 +53,6 @@ export function FilterPanel({ searchQuery, onSearchChange, allTags, selectedTags
       )}
     </div>
   )
-}
+})
+
+FilterPanel.displayName = "FilterPanel"

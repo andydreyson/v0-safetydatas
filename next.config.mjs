@@ -9,6 +9,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Fix for pdf-parse and tesseract.js with Turbopack
+  serverExternalPackages: ['pdf-parse', 'tesseract.js'],
 }
 
 export default nextConfig

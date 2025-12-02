@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { Trash2, Download, QrCode } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Trash2, Download, QrCode, Edit } from "lucide-react"
 import type { Document } from "@/app/page"
 import { TagInput } from "@/components/tag-input"
 
@@ -13,6 +15,7 @@ type TableViewProps = {
   onTagAdd: (docId: string, tag: string) => void
   onTagRemove: (docId: string, tag: string) => void
   onDelete: (docIds: string[]) => void
+  onNameUpdate: (docId: string, newName: string) => void
 }
 
 export function TableView({
@@ -22,7 +25,11 @@ export function TableView({
   onTagAdd,
   onTagRemove,
   onDelete,
+  onNameUpdate,
 }: TableViewProps) {
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState("")
+
   const toggleSelection = (id: string) => {
     if (selectedDocuments.includes(id)) {
       onSelectionChange(selectedDocuments.filter((docId) => docId !== id))
@@ -39,10 +46,36 @@ export function TableView({
     }
   }
 
+  const startEditing = (doc: Document) => {
+    setEditingId(doc.id)
+    setEditingName(doc.name)
+  }
+
+  const saveEditing = () => {
+    if (editingId && editingName.trim()) {
+      onNameUpdate(editingId, editingName.trim())
+    }
+    setEditingId(null)
+    setEditingName("")
+  }
+
+  const cancelEditing = () => {
+    setEditingId(null)
+    setEditingName("")
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveEditing()
+    } else if (e.key === 'Escape') {
+      cancelEditing()
+    }
+  }
+
   return (
-    <div className="border rounded-lg overflow-hidden bg-card">
+    <div className="border rounded-lg overflow-hidden bg-white">
       <table className="w-full">
-        <thead className="bg-muted/50 border-b">
+        <thead className="bg-gray-100 border-b">
           <tr>
             <th className="w-12 p-4">
               <Checkbox
@@ -50,27 +83,53 @@ export function TableView({
                 onCheckedChange={toggleAll}
               />
             </th>
-            <th className="text-left p-4 font-semibold text-sm">Name</th>
-            <th className="text-left p-4 font-semibold text-sm">Upload Date</th>
-            <th className="text-left p-4 font-semibold text-sm">Type</th>
-            <th className="text-left p-4 font-semibold text-sm">Size</th>
-            <th className="text-left p-4 font-semibold text-sm">Tags</th>
-            <th className="text-right p-4 font-semibold text-sm">Actions</th>
+            <th className="text-left p-4 font-semibold text-sm text-gray-900">Name</th>
+            <th className="text-left p-4 font-semibold text-sm text-gray-900">Upload Date</th>
+            <th className="text-left p-4 font-semibold text-sm text-gray-900">Type</th>
+            <th className="text-left p-4 font-semibold text-sm text-gray-900">Size</th>
+            <th className="text-left p-4 font-semibold text-sm text-gray-900">Tags</th>
+            <th className="text-right p-4 font-semibold text-sm text-gray-900">Actions</th>
           </tr>
         </thead>
         <tbody>
           {documents.map((doc) => (
-            <tr key={doc.id} className="border-b last:border-b-0 hover:bg-muted/30">
+            <tr key={doc.id} className="border-b last:border-b-0 hover:bg-gray-50">
               <td className="p-4">
                 <Checkbox
                   checked={selectedDocuments.includes(doc.id)}
                   onCheckedChange={() => toggleSelection(doc.id)}
                 />
               </td>
-              <td className="p-4 font-medium">{doc.name}</td>
-              <td className="p-4 text-sm text-muted-foreground">{new Date(doc.uploadDate).toLocaleDateString()}</td>
-              <td className="p-4 text-sm">{doc.fileType}</td>
-              <td className="p-4 text-sm">{doc.size}</td>
+              <td className="p-4 font-medium text-gray-900">
+                {editingId === doc.id ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      onBlur={saveEditing}
+                      autoFocus
+                      className="h-8"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 group">
+                    <span>{doc.name}</span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => startEditing(doc)}
+                      title="Edit name"
+                    >
+                      <Edit className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </td>
+              <td className="p-4 text-sm text-gray-600">{new Date(doc.uploadDate).toLocaleDateString()}</td>
+              <td className="p-4 text-sm text-gray-900">{doc.fileType}</td>
+              <td className="p-4 text-sm text-gray-900">{doc.size}</td>
               <td className="p-4">
                 <TagInput
                   tags={doc.tags}

@@ -1,0 +1,113 @@
+{
+  "groups": [
+    {
+      "id": "55de801b-f0f1-473f-9197-43b890ca3fa1",
+      "name": "Verksted del 2",
+      "description": "",
+      "createdDate": "2025-12-01T22:35:25.673Z",
+      "documentIds": [
+        "d7d4901f-dd66-4952-9faf-e9c62e4f32d2",
+        "94aabe49-3dc9-40f8-b05d-077971e50e03",
+        "0575e29e-0987-4694-b258-8845462467a6"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "94aabe49-3dc9-40f8-b05d-077971e50e03",
+      "name": "NATRIUMTETRABORAT",
+      "originalName": "16144-NATRIUMTETRABORAT.pdf",
+      "compoundName": "NATRIUMTETRABORAT",
+      "uploadDate": "2025-12-01T21:34:31.237Z",
+      "fileType": "application/pdf",
+      "size": "151.26 KB",
+      "filePath": "uploads/NATRIUMTETRABORAT_94aabe49.pdf",
+      "tags": [],
+      "pageNumber": 5
+    },
+    {
+      "id": "0575e29e-0987-4694-b258-8845462467a6",
+      "name": "Lano_Flytende_Håndsåpe",
+      "originalName": "SDS_NOSC_8198596_2016-06-21.pdf",
+      "compoundName": "Lano_Flytende_Håndsåpe",
+      "uploadDate": "2025-12-01T21:34:39.028Z",
+      "fileType": "application/pdf",
+      "size": "238.82 KB",
+      "filePath": "uploads/Lano_Flytende_Håndsåpe_0575e29e.pdf",
+      "tags": [],
+      "pageNumber": 3
+    },
+    {
+      "id": "2680c1df-0dc0-49e5-a260-7ae3aafedf36",
+      "name": "Paint_Thinner",
+      "originalName": "Paint-thinner-kleanstrip.pdf",
+      "compoundName": "Paint_Thinner",
+      "uploadDate": "2025-12-01T21:34:57.954Z",
+      "fileType": "application/pdf",
+      "size": "23.25 KB",
+      "filePath": "uploads/Paint_Thinner_2680c1df.pdf",
+      "tags": [],
+      "pageNumber": 7
+    },
+    {
+      "id": "3dd2ebb6-5c40-452a-8f65-3ec329cbb6ce",
+      "name": "Propane",
+      "originalName": "Propane-GHS-SDS-2021-09-17_EN.pdf",
+      "compoundName": "Propane",
+      "uploadDate": "2025-12-01T21:34:59.701Z",
+      "fileType": "application/pdf",
+      "size": "285.34 KB",
+      "filePath": "uploads/Propane_3dd2ebb6.pdf",
+      "tags": [],
+      "pageNumber": 8
+    },
+    {
+      "id": "b631b2b0-dd2a-412b-9156-366aaf9fe981",
+      "name": "Salmiakk",
+      "originalName": "Salmiakk.pdf",
+      "compoundName": "Salmiakk",
+      "uploadDate": "2025-12-01T21:35:00.215Z",
+      "fileType": "application/pdf",
+      "size": "543.52 KB",
+      "filePath": "uploads/Salmiakk_b631b2b0.pdf",
+      "tags": [],
+      "pageNumber": 11
+    },
+    {
+      "id": "9d1f07a2-e657-434a-b3fa-0b89100fe1e6",
+      "name": "Sodium_hydroxide",
+      "originalName": "SDB KAUSTISK SODA, Natriumhydroksid.pdf",
+      "compoundName": "Sodium_hydroxide",
+      "uploadDate": "2025-12-01T21:35:00.755Z",
+      "fileType": "application/pdf",
+      "size": "221.82 KB",
+      "filePath": "uploads/Sodium_hydroxide_9d1f07a2.pdf",
+      "tags": [],
+      "pageNumber": 12
+    },
+    {
+      "id": "e215c332-8b74-4497-8638-0c61d5eb7a66",
+      "name": "Acetone",
+      "originalName": "SDB-5025-IE-EN.pdf",
+      "compoundName": "Acetone",
+      "uploadDate": "2025-12-01T21:35:01.437Z",
+      "fileType": "application/pdf",
+      "size": "287.58 KB",
+      "filePath": "uploads/Acetone_e215c332.pdf",
+      "tags": [],
+      "pageNumber": 2
+    },
+    {
+      "id": "a95bdc62-33c6-4124-984a-f7509c1ce085",
+      "name": "Zalo_Oppvask-_og_kjøkkenspray",
+      "originalName": "Zolo-oppvask.pdf",
+      "compoundName": "Zalo_Oppvask-_og_kjøkkenspray",
+      "uploadDate": "2025-12-01T21:35:02.778Z",
+      "fileType": "application/pdf",
+      "size": "350.49 KB",
+      "filePath": "uploads/Zalo_Oppvask-_og_kjøkkenspray_a95bdc62.pdf",
+      "tags": [],
+      "pageNumber": 13
+    }
+  ]
+}

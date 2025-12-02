@@ -7,18 +7,14 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'SafetyData - Chemical Safety Data Sheet Manager',
+  description: 'Modern chemical safety data sheet management with AI-powered organization',
+  generator: 'SafetyData.com',
   icons: {
     icon: [
       {
         url: '/icon-light-32x32.png',
         media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
       },
       {
         url: '/icon.svg',
@@ -36,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased bg-[#FAFAFA]`}>
         {children}
         <Analytics />
       </body>
