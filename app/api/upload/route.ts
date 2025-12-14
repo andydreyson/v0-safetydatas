@@ -43,6 +43,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 })
     }
 
+    // Security: File size limit (50MB per file)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { error: `File "${file.name}" exceeds maximum size of 50MB` },
+          { status: 400 }
+        )
+      }
+
+      // Security: File extension validation
+      const allowedExtensions = ['.pdf']
+      const extension = path.extname(file.name).toLowerCase()
+
+      if (!allowedExtensions.includes(extension)) {
+        return NextResponse.json(
+          { error: `File "${file.name}" is not a PDF. Only PDF files are allowed.` },
+          { status: 400 }
+        )
+      }
+
+      // Security: Path traversal protection
+      if (extension.includes('..') || extension.includes('/') || extension.includes('\\')) {
+        return NextResponse.json(
+          { error: 'Invalid file extension' },
+          { status: 400 }
+        )
+      }
+    }
+
     // Check subscription limit BEFORE uploading
     const limitCheck = await checkDocumentLimit(userId)
 
@@ -73,7 +104,20 @@ export async function POST(request: NextRequest) {
     const uploadedDocuments = []
 
     for (const file of files) {
-      // Step 1: Save file temporarily first
+      // Step 1: Read file into buffer
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+
+      // Security: Verify PDF magic bytes
+      const pdfSignature = buffer.toString('utf-8', 0, 4)
+      if (pdfSignature !== '%PDF') {
+        return NextResponse.json(
+          { error: `File "${file.name}" is not a valid PDF document` },
+          { status: 400 }
+        )
+      }
+
+      // Step 2: Save file temporarily
       const tempId = uuidv4()
       const extension = path.extname(file.name)
       const tempFilename = `temp_${tempId}${extension}`
@@ -85,10 +129,8 @@ export async function POST(request: NextRequest) {
         fs.mkdirSync(uploadsDir, { recursive: true })
       }
 
-      // Save file temporarily
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      fs.writeFileSync(tempFilePath, buffer)
+      // Security: Use async file operations
+      await fs.promises.writeFile(tempFilePath, buffer)
 
       // Step 2: Extract chemical name from saved PDF
       let compoundName = file.name.replace(path.extname(file.name), "")
@@ -115,8 +157,8 @@ export async function POST(request: NextRequest) {
       const filename = `${sanitizedName}_${fileId.substring(0, 8)}${extension}`
       const finalFilePath = path.join(uploadsDir, filename)
 
-      // Rename from temp to final name
-      fs.renameSync(tempFilePath, finalFilePath)
+      // Security: Use async rename operation
+      await fs.promises.rename(tempFilePath, finalFilePath)
 
       console.log(`[Upload] ✓ Saved as: ${filename}`)
 

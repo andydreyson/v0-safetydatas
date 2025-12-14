@@ -80,13 +80,42 @@ export async function PATCH(request: Request) {
 
     const { name, company, phone } = await request.json()
 
-    // Update user profile
+    // Sanitize inputs
+    const sanitizedData = {
+      name: name?.trim(),
+      company: company?.trim(),
+      phone: phone?.trim(),
+    }
+
+    // Validate input lengths
+    if (sanitizedData.name && sanitizedData.name.length > 100) {
+      return NextResponse.json(
+        { error: 'Name is too long (max 100 characters)' },
+        { status: 400 }
+      )
+    }
+
+    if (sanitizedData.company && sanitizedData.company.length > 200) {
+      return NextResponse.json(
+        { error: 'Company name is too long (max 200 characters)' },
+        { status: 400 }
+      )
+    }
+
+    if (sanitizedData.phone && sanitizedData.phone.length > 20) {
+      return NextResponse.json(
+        { error: 'Phone number is too long (max 20 characters)' },
+        { status: 400 }
+      )
+    }
+
+    // Update user profile with sanitized data
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        name: name || undefined,
-        company: company || undefined,
-        phone: phone || undefined,
+        name: sanitizedData.name || undefined,
+        company: sanitizedData.company || undefined,
+        phone: sanitizedData.phone || undefined,
       }
     })
 
@@ -103,8 +132,14 @@ export async function PATCH(request: Request) {
 
   } catch (error: any) {
     console.error('Error updating user:', error)
+
+    // Generic error message in production
+    const message = process.env.NODE_ENV === 'production'
+      ? 'Failed to update profile. Please try again.'
+      : error?.message || 'Failed to update user'
+
     return NextResponse.json(
-      { error: error?.message || 'Failed to update user' },
+      { error: message },
       { status: 500 }
     )
   }
