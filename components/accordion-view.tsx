@@ -4,7 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileText, Trash2, Download, QrCode, Edit2, Check, X } from "lucide-react"
+import { FileText, Trash2, Download, QrCode, Edit2, Check, X, Eye } from "lucide-react"
 import type { Document } from "@/app/page"
 import { TagInput } from "@/components/tag-input"
 import { useState } from "react"
@@ -17,6 +17,7 @@ type AccordionViewProps = {
   onTagRemove: (docId: string, tag: string) => void
   onDelete: (docIds: string[]) => void
   onNameUpdate: (docId: string, newName: string) => void
+  onDocumentClick?: (doc: Document) => void
 }
 
 export function AccordionView({
@@ -27,6 +28,7 @@ export function AccordionView({
   onTagRemove,
   onDelete,
   onNameUpdate,
+  onDocumentClick,
 }: AccordionViewProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editValue, setEditValue] = useState("")
@@ -112,7 +114,15 @@ export function AccordionView({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900">{doc.name}</span>
+                  <span
+                    className="font-semibold text-gray-900 cursor-pointer hover:text-primary hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDocumentClick?.(doc)
+                    }}
+                  >
+                    {doc.name}
+                  </span>
                   <Button
                     size="icon"
                     variant="ghost"
@@ -159,6 +169,10 @@ export function AccordionView({
               </div>
 
               <div className="flex gap-2 pt-2">
+                <Button size="sm" variant="outline" onClick={() => onDocumentClick?.(doc)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Document
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => window.open(doc.qrCode, "_blank")}>
                   <QrCode className="mr-2 h-4 w-4" />
                   View QR Code

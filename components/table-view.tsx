@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash2, Download, QrCode, Edit } from "lucide-react"
+import { Trash2, Download, QrCode, Edit, Eye } from "lucide-react"
 import type { Document } from "@/app/page"
 import { TagInput } from "@/components/tag-input"
 
@@ -16,6 +16,7 @@ type TableViewProps = {
   onTagRemove: (docId: string, tag: string) => void
   onDelete: (docIds: string[]) => void
   onNameUpdate: (docId: string, newName: string) => void
+  onDocumentClick?: (doc: Document) => void
 }
 
 export function TableView({
@@ -26,6 +27,7 @@ export function TableView({
   onTagRemove,
   onDelete,
   onNameUpdate,
+  onDocumentClick,
 }: TableViewProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState("")
@@ -114,7 +116,12 @@ export function TableView({
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 group">
-                    <span>{doc.name}</span>
+                    <span
+                      className="cursor-pointer hover:text-primary hover:underline"
+                      onClick={() => onDocumentClick?.(doc)}
+                    >
+                      {doc.name}
+                    </span>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -139,6 +146,14 @@ export function TableView({
               </td>
               <td className="p-4">
                 <div className="flex items-center justify-end gap-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => onDocumentClick?.(doc)}
+                    title="View Document"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
                   <Button
                     size="icon"
                     variant="ghost"

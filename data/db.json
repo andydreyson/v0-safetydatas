@@ -8,106 +8,118 @@
       "documentIds": [
         "d7d4901f-dd66-4952-9faf-e9c62e4f32d2",
         "94aabe49-3dc9-40f8-b05d-077971e50e03",
-        "0575e29e-0987-4694-b258-8845462467a6"
+        "0575e29e-0987-4694-b258-8845462467a6",
+        "93ae1681-9747-4b5c-8bd6-8f310b379ea8",
+        "410a21a9-8740-4cee-800b-54310269ed8c",
+        "79546773-0b9c-4fd9-b67d-edb46904ad7a",
+        "68fcad51-5a7e-4e95-a8e9-6a8ef7e5f4b3",
+        "c721fd79-f06f-470b-ae43-2463146094b5",
+        "eef41339-59b1-4248-99a4-7a8028651b79",
+        "b2d75264-0128-4654-8a1d-67fbb56a44f9",
+        "96cc74f2-451a-406f-801f-0b0277568016",
+        "9b6ee1b8-6475-4b19-bb2f-54dec133039f"
       ]
     }
   ],
   "documents": [
     {
-      "id": "94aabe49-3dc9-40f8-b05d-077971e50e03",
+      "id": "b2d75264-0128-4654-8a1d-67fbb56a44f9",
+      "name": "Rhodium",
+      "originalName": "51_2006764091_RHODIUMCASNO7440-16-6MSDS.pdf",
+      "compoundName": "Rhodium",
+      "uploadDate": "2025-12-04T18:53:45.585Z",
+      "fileType": "application/pdf",
+      "size": "105.77 KB",
+      "filePath": "uploads/Rhodium_b2d75264.pdf",
+      "tags": []
+    },
+    {
+      "id": "68fcad51-5a7e-4e95-a8e9-6a8ef7e5f4b3",
       "name": "NATRIUMTETRABORAT",
       "originalName": "16144-NATRIUMTETRABORAT.pdf",
       "compoundName": "NATRIUMTETRABORAT",
-      "uploadDate": "2025-12-01T21:34:31.237Z",
+      "uploadDate": "2025-12-04T18:53:46.241Z",
       "fileType": "application/pdf",
       "size": "151.26 KB",
-      "filePath": "uploads/NATRIUMTETRABORAT_94aabe49.pdf",
-      "tags": [],
-      "pageNumber": 5
+      "filePath": "uploads/NATRIUMTETRABORAT_68fcad51.pdf",
+      "tags": []
     },
     {
-      "id": "0575e29e-0987-4694-b258-8845462467a6",
-      "name": "Lano_Flytende_Håndsåpe",
-      "originalName": "SDS_NOSC_8198596_2016-06-21.pdf",
-      "compoundName": "Lano_Flytende_Håndsåpe",
-      "uploadDate": "2025-12-01T21:34:39.028Z",
-      "fileType": "application/pdf",
-      "size": "238.82 KB",
-      "filePath": "uploads/Lano_Flytende_Håndsåpe_0575e29e.pdf",
-      "tags": [],
-      "pageNumber": 3
-    },
-    {
-      "id": "2680c1df-0dc0-49e5-a260-7ae3aafedf36",
+      "id": "c721fd79-f06f-470b-ae43-2463146094b5",
       "name": "Paint_Thinner",
       "originalName": "Paint-thinner-kleanstrip.pdf",
       "compoundName": "Paint_Thinner",
-      "uploadDate": "2025-12-01T21:34:57.954Z",
+      "uploadDate": "2025-12-04T18:53:47.222Z",
       "fileType": "application/pdf",
       "size": "23.25 KB",
-      "filePath": "uploads/Paint_Thinner_2680c1df.pdf",
-      "tags": [],
-      "pageNumber": 7
+      "filePath": "uploads/Paint_Thinner_c721fd79.pdf",
+      "tags": []
     },
     {
-      "id": "3dd2ebb6-5c40-452a-8f65-3ec329cbb6ce",
+      "id": "eef41339-59b1-4248-99a4-7a8028651b79",
       "name": "Propane",
       "originalName": "Propane-GHS-SDS-2021-09-17_EN.pdf",
       "compoundName": "Propane",
-      "uploadDate": "2025-12-01T21:34:59.701Z",
+      "uploadDate": "2025-12-04T18:53:48.412Z",
       "fileType": "application/pdf",
       "size": "285.34 KB",
-      "filePath": "uploads/Propane_3dd2ebb6.pdf",
-      "tags": [],
-      "pageNumber": 8
+      "filePath": "uploads/Propane_eef41339.pdf",
+      "tags": []
     },
     {
-      "id": "b631b2b0-dd2a-412b-9156-366aaf9fe981",
-      "name": "Salmiakk",
+      "id": "410a21a9-8740-4cee-800b-54310269ed8c",
+      "name": "Ammoniakkløsning",
       "originalName": "Salmiakk.pdf",
-      "compoundName": "Salmiakk",
-      "uploadDate": "2025-12-01T21:35:00.215Z",
+      "compoundName": "Ammoniakkløsning",
+      "uploadDate": "2025-12-04T18:53:48.946Z",
       "fileType": "application/pdf",
       "size": "543.52 KB",
-      "filePath": "uploads/Salmiakk_b631b2b0.pdf",
-      "tags": [],
-      "pageNumber": 11
+      "filePath": "uploads/Ammoniakkløsning_410a21a9.pdf",
+      "tags": []
     },
     {
-      "id": "9d1f07a2-e657-434a-b3fa-0b89100fe1e6",
+      "id": "96cc74f2-451a-406f-801f-0b0277568016",
       "name": "Sodium_hydroxide",
       "originalName": "SDB KAUSTISK SODA, Natriumhydroksid.pdf",
       "compoundName": "Sodium_hydroxide",
-      "uploadDate": "2025-12-01T21:35:00.755Z",
+      "uploadDate": "2025-12-04T18:53:49.439Z",
       "fileType": "application/pdf",
       "size": "221.82 KB",
-      "filePath": "uploads/Sodium_hydroxide_9d1f07a2.pdf",
-      "tags": [],
-      "pageNumber": 12
+      "filePath": "uploads/Sodium_hydroxide_96cc74f2.pdf",
+      "tags": []
     },
     {
-      "id": "e215c332-8b74-4497-8638-0c61d5eb7a66",
+      "id": "93ae1681-9747-4b5c-8bd6-8f310b379ea8",
       "name": "Acetone",
       "originalName": "SDB-5025-IE-EN.pdf",
       "compoundName": "Acetone",
-      "uploadDate": "2025-12-01T21:35:01.437Z",
+      "uploadDate": "2025-12-04T18:53:53.117Z",
       "fileType": "application/pdf",
       "size": "287.58 KB",
-      "filePath": "uploads/Acetone_e215c332.pdf",
-      "tags": [],
-      "pageNumber": 2
+      "filePath": "uploads/Acetone_93ae1681.pdf",
+      "tags": []
     },
     {
-      "id": "a95bdc62-33c6-4124-984a-f7509c1ce085",
+      "id": "79546773-0b9c-4fd9-b67d-edb46904ad7a",
+      "name": "Lano_Flytende_Håndsåpe",
+      "originalName": "SDS_NOSC_8198596_2016-06-21.pdf",
+      "compoundName": "Lano_Flytende_Håndsåpe",
+      "uploadDate": "2025-12-04T18:53:53.719Z",
+      "fileType": "application/pdf",
+      "size": "238.82 KB",
+      "filePath": "uploads/Lano_Flytende_Håndsåpe_79546773.pdf",
+      "tags": []
+    },
+    {
+      "id": "9b6ee1b8-6475-4b19-bb2f-54dec133039f",
       "name": "Zalo_Oppvask-_og_kjøkkenspray",
       "originalName": "Zolo-oppvask.pdf",
       "compoundName": "Zalo_Oppvask-_og_kjøkkenspray",
-      "uploadDate": "2025-12-01T21:35:02.778Z",
+      "uploadDate": "2025-12-04T18:53:54.386Z",
       "fileType": "application/pdf",
       "size": "350.49 KB",
-      "filePath": "uploads/Zalo_Oppvask-_og_kjøkkenspray_a95bdc62.pdf",
-      "tags": [],
-      "pageNumber": 13
+      "filePath": "uploads/Zalo_Oppvask-_og_kjøkkenspray_9b6ee1b8.pdf",
+      "tags": []
     }
   ]
 }

@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { LayoutGrid, Table, List, Download, Tag, Trash2, FileText, BookOpen, Printer, Copy, ArrowUpAZ, Sparkles, RefreshCw, FolderPlus, Folders, Home } from "lucide-react"
+import { LayoutGrid, Table, List, Download, Tag, Trash2, FileText, BookOpen, Printer, Copy, ArrowUpAZ, Sparkles, RefreshCw, FolderPlus, Folders, Home, Shield, HelpCircle, User, LogOut } from "lucide-react"
+import { signOut } from "next-auth/react"
 import type { ViewMode, Document } from "@/app/page"
 import type { Group } from "@/lib/db"
 import { useState } from "react"
@@ -26,6 +27,8 @@ type SidebarProps = {
   onAssignToGroup: () => void // Added assign to group handler
   currentView?: "dashboard" | "documents" | "groups"
   onViewChange?: (view: "dashboard" | "documents" | "groups") => void
+  onOpenHelp?: () => void // Added help handler
+  onOpenAccount?: () => void // Added account handler
 }
 
 export function Sidebar({
@@ -46,6 +49,8 @@ export function Sidebar({
   onAssignToGroup,
   currentView = "dashboard",
   onViewChange,
+  onOpenHelp,
+  onOpenAccount,
 }: SidebarProps) {
   const [newTag, setNewTag] = useState("")
   const [showTagInput, setShowTagInput] = useState(false)
@@ -63,12 +68,12 @@ export function Sidebar({
       {/* Logo Card */}
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-orange-100 p-3 ring-2 ring-orange-200">
-            <FileText className="h-6 w-6 text-primary" />
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-3 rounded-xl">
+            <Shield className="h-6 w-6 text-white" />
           </div>
           <div>
-            <span className="font-bold text-xl text-primary">
-              SafetyData
+            <span className="font-bold text-xl bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              SafetyDatas
             </span>
             <p className="text-xs text-gray-500 font-medium">Chemical Safety Manager</p>
           </div>
@@ -82,8 +87,8 @@ export function Sidebar({
             variant="ghost"
             className={`w-full justify-start rounded-xl transition-all text-lg h-14 ${
               currentView === "dashboard"
-                ? "bg-primary text-white font-semibold"
-                : "hover:bg-gray-50 text-gray-700"
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/30"
+                : "hover:bg-blue-50 text-gray-700 hover:text-blue-600"
             }`}
             onClick={() => onViewChange?.("dashboard")}
           >
@@ -94,8 +99,8 @@ export function Sidebar({
             variant="ghost"
             className={`w-full justify-start rounded-xl transition-all text-lg h-14 ${
               currentView === "documents"
-                ? "bg-primary text-white font-semibold"
-                : "hover:bg-gray-50 text-gray-700"
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/30"
+                : "hover:bg-blue-50 text-gray-700 hover:text-blue-600"
             }`}
             onClick={() => onViewChange?.("documents")}
           >
@@ -106,14 +111,42 @@ export function Sidebar({
             variant="ghost"
             className={`w-full justify-start rounded-xl transition-all text-lg h-14 ${
               currentView === "groups"
-                ? "bg-primary text-white font-semibold"
-                : "hover:bg-gray-50 text-gray-700"
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/30"
+                : "hover:bg-blue-50 text-gray-700 hover:text-blue-600"
             }`}
             onClick={() => onViewChange?.("groups")}
           >
             <Folders className="mr-3 h-6 w-6" />
             My Groups
           </Button>
+
+          {/* Help & Account Buttons - Always visible */}
+          <div className="border-t mt-4 pt-4 space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start rounded-xl transition-all text-lg h-14 hover:bg-blue-50 text-gray-700 hover:text-blue-600"
+              onClick={onOpenHelp}
+            >
+              <HelpCircle className="mr-3 h-6 w-6" />
+              Help & Guide
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start rounded-xl transition-all text-lg h-14 hover:bg-blue-50 text-gray-700 hover:text-blue-600"
+              onClick={onOpenAccount}
+            >
+              <User className="mr-3 h-6 w-6" />
+              Account
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start rounded-xl transition-all text-lg h-14 hover:bg-red-50 text-gray-700 hover:text-red-600"
+              onClick={() => signOut({ callbackUrl: '/landing' })}
+            >
+              <LogOut className="mr-3 h-6 w-6" />
+              Logout
+            </Button>
+          </div>
 
           {/* Simple Actions */}
           {currentView === "documents" && documents.length > 0 && (

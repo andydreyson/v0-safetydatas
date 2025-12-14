@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { FileText, Trash2, Download, QrCode, Edit2, Check, X } from "lucide-react"
+import { FileText, Trash2, Download, QrCode, Edit2, Check, X, Eye } from "lucide-react"
 import type { Document } from "@/app/page"
 import { TagInput } from "@/components/tag-input"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,7 @@ type GalleryViewProps = {
   onTagRemove: (docId: string, tag: string) => void
   onDelete: (docIds: string[]) => void
   onNameUpdate: (docId: string, newName: string) => void
+  onDocumentClick?: (doc: Document) => void
 }
 
 export function GalleryView({
@@ -27,6 +28,7 @@ export function GalleryView({
   onTagRemove,
   onDelete,
   onNameUpdate,
+  onDocumentClick,
 }: GalleryViewProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editValue, setEditValue] = useState("")
@@ -104,6 +106,15 @@ export function GalleryView({
             <Button
               size="icon"
               variant="ghost"
+              className="h-8 w-8 bg-white/90 backdrop-blur-sm hover:bg-green-100"
+              onClick={() => onDocumentClick?.(doc)}
+              title="View Document"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
               className="h-8 w-8 bg-white/90 backdrop-blur-sm hover:bg-yellow-100"
               onClick={() => window.open(doc.qrCode, "_blank")}
               title="View QR Code"
@@ -171,7 +182,11 @@ export function GalleryView({
               ) : (
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-base truncate flex-1 text-gray-900" title={doc.name}>
+                    <h3
+                      className="font-semibold text-base truncate flex-1 text-gray-900 cursor-pointer hover:text-primary hover:underline"
+                      title={doc.name}
+                      onClick={() => onDocumentClick?.(doc)}
+                    >
                       {doc.name}
                     </h3>
                     <Button

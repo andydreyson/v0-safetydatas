@@ -1,106 +1,148 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getDocumentsByGroupId, addDocumentsToGroup, removeDocumentsFromGroup } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import {
+  getGroupById,
+  assignDocumentsToGroup,
+  removeDocumentsFromGroup,
+} from "@/lib/prisma-db"
 
-export const runtime = 'nodejs'
+export const runtime = "nodejs"
 
 type RouteContext = {
   params: Promise<{ id: string }>
 }
 
-// GET /api/groups/[id]/documents - Get all documents in a group
-export async function GET(
-  request: NextRequest,
-  context: RouteContext
-) {
+// GET /api/groups/[id]/documents - Get all documents in a group (user-scoped)
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const { id } = await context.params
-    const documents = await getDocumentsByGroupId(id)
+    // Check authentication
+    const session = await getServerSession(authOptions)
 
-    return NextResponse.json({ documents })
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - Please login" },
+        { status: 401 }
+      )
+    }
+
+    const userId = session.user.id
+    const { id } = await context.params
+
+    // Fetch group with documents (user-scoped)
+    const group = await getGroupById(userId, id)
+
+    if (!group) {
+      return NextResponse.json(
+        { error: "Group not found or access denied" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ documents: group.documents || [] })
   } catch (error) {
-    console.error('[Groups API] Error fetching group documents:', error)
+    console.error("[Groups API] Error fetching group documents:", error)
     return NextResponse.json(
-      { error: 'Failed to fetch group documents' },
+      { error: "Failed to fetch group documents" },
       { status: 500 }
     )
   }
 }
 
-// POST /api/groups/[id]/documents - Add documents to a group
-export async function POST(
-  request: NextRequest,
-  context: RouteContext
-) {
+// POST /api/groups/[id]/documents - Add documents to a group (user-scoped)
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - Please login" },
+        { status: 401 }
+      )
+    }
+
+    const userId = session.user.id
     const { id } = await context.params
     const { documentIds } = await request.json()
 
     if (!documentIds || !Array.isArray(documentIds)) {
       return NextResponse.json(
-        { error: 'Invalid request: documentIds array required' },
+        { error: "Invalid request: documentIds array required" },
         { status: 400 }
       )
     }
 
-    const success = await addDocumentsToGroup(id, documentIds)
+    // Assign documents to group with user scoping
+    const addedCount = await assignDocumentsToGroup(userId, documentIds, id)
 
-    if (!success) {
+    if (addedCount === 0) {
       return NextResponse.json(
-        { error: 'Group not found' },
+        { error: "No documents were added - check permissions" },
+        { status: 400 }
+      )
+    }
+
+    console.log(`[Groups API] ✓ Added ${addedCount} document(s) to group ${id}`)
+
+    return NextResponse.json({
+      success: true,
+      addedCount,
+    })
+  } catch (error: any) {
+    console.error("[Groups API] Error adding documents to group:", error)
+
+    if (error.message === "Group not found or access denied") {
+      return NextResponse.json(
+        { error: "Group not found or access denied" },
         { status: 404 }
       )
     }
 
-    console.log(`[Groups API] ✓ Added ${documentIds.length} document(s) to group ${id}`)
-
-    return NextResponse.json({
-      success: true,
-      addedCount: documentIds.length
-    })
-  } catch (error) {
-    console.error('[Groups API] Error adding documents to group:', error)
     return NextResponse.json(
-      { error: 'Failed to add documents to group' },
+      { error: "Failed to add documents to group" },
       { status: 500 }
     )
   }
 }
 
-// DELETE /api/groups/[id]/documents - Remove documents from a group
-export async function DELETE(
-  request: NextRequest,
-  context: RouteContext
-) {
+// DELETE /api/groups/[id]/documents - Remove documents from a group (user-scoped)
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized - Please login" },
+        { status: 401 }
+      )
+    }
+
+    const userId = session.user.id
     const { id } = await context.params
     const { documentIds } = await request.json()
 
     if (!documentIds || !Array.isArray(documentIds)) {
       return NextResponse.json(
-        { error: 'Invalid request: documentIds array required' },
+        { error: "Invalid request: documentIds array required" },
         { status: 400 }
       )
     }
 
-    const success = await removeDocumentsFromGroup(id, documentIds)
+    // Remove documents from group with user scoping
+    const removedCount = await removeDocumentsFromGroup(userId, documentIds)
 
-    if (!success) {
-      return NextResponse.json(
-        { error: 'Group not found' },
-        { status: 404 }
-      )
-    }
-
-    console.log(`[Groups API] ✓ Removed ${documentIds.length} document(s) from group ${id}`)
+    console.log(`[Groups API] ✓ Removed ${removedCount} document(s) from group ${id}`)
 
     return NextResponse.json({
       success: true,
-      removedCount: documentIds.length
+      removedCount,
     })
   } catch (error) {
-    console.error('[Groups API] Error removing documents from group:', error)
+    console.error("[Groups API] Error removing documents from group:", error)
     return NextResponse.json(
-      { error: 'Failed to remove documents from group' },
+      { error: "Failed to remove documents from group" },
       { status: 500 }
     )
   }

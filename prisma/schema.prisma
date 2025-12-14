@@ -1,0 +1,157 @@
+// Prisma schema for SafetyDatas.com
+// NextAuth.js + Stripe Subscriptions + App Models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// NextAuth.js Models
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For email/password auth
+  company       String?
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // App relations
+  subscription  Subscription?
+  documents     Document[]
+  groups        Group[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// Stripe Subscription Model
+// ============================================
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Stripe fields
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  stripeProductId      String?
+
+  // Subscription details
+  planName             String    // "Starter", "Professional", "Enterprise"
+  status               String    // "active", "canceled", "past_due", "trialing", "incomplete"
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  trialEnd             DateTime?
+
+  // Usage tracking
+  documentsUsed        Int       @default(0)
+  documentsLimit       Int?      // null = unlimited
+  groupsUsed           Int       @default(0)
+  groupsLimit          Int       @default(5)
+  usersLimit           Int       @default(1)
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+// ============================================
+// App Models (Documents & Groups)
+// ============================================
+
+model Document {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name          String
+  originalName  String
+  compoundName  String
+  uploadDate    DateTime @default(now())
+  fileType      String
+  size          String
+  filePath      String?
+
+  tags          String[]
+  category      String?
+  description   String?
+  qrCode        String?
+  pageNumber    Int?
+
+  // Group relation
+  groupId       String?
+  group         Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([groupId])
+}
+
+model Group {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  color       String     @default("#3B82F6")
+  qrCode      String?
+
+  documents   Document[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId])
+}

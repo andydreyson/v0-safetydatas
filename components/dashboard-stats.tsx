@@ -22,8 +22,8 @@ export function DashboardStats({
       value: totalDocuments,
       icon: FileText,
       description: "Safety data sheets",
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
     },
     {
       title: "Active Groups",
@@ -58,15 +58,15 @@ export function DashboardStats({
           key={stat.title}
           className="overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer border-l-4 bg-white"
           style={{
-            borderLeftColor: `oklch(var(--${
-              stat.color.includes("primary")
-                ? "primary"
-                : stat.color.includes("green")
-                ? "safety-green"
-                : stat.color.includes("yellow")
-                ? "safety-yellow"
-                : "hazard-red"
-            }))`,
+            borderLeftColor: stat.color.includes("blue")
+              ? "#2563eb"
+              : `oklch(var(--${
+                  stat.color.includes("green")
+                    ? "safety-green"
+                    : stat.color.includes("yellow")
+                    ? "safety-yellow"
+                    : "hazard-red"
+                }))`,
           }}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

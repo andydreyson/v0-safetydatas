@@ -29,13 +29,13 @@ export function DocumentUpload({ onUpload }: DocumentUploadProps) {
 
   return (
     <Card
-      className="border-2 border-dashed hover:border-primary/50 transition-colors cursor-pointer"
+      className="bg-white border-2 border-dashed border-gray-300 hover:border-primary/50 transition-colors cursor-pointer"
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
       onClick={() => document.getElementById("file-input")?.click()}
     >
       <div className="p-8 flex flex-col items-center justify-center text-center">
-        <Upload className="h-12 w-12 text-gray-400 mb-4" />
+        <Upload className="h-12 w-12 text-gray-500 mb-4" />
         <h3 className="font-semibold text-lg mb-2 text-gray-900">Upload Documents</h3>
         <p className="text-sm text-gray-600 mb-4">Drag and drop files here, or click to browse</p>
         <p className="text-xs text-gray-500">Supports PDF, DOC, DOCX, XLS, XLSX, and more</p>

@@ -14,6 +14,7 @@ type DocumentViewProps = {
   onTagRemove: (docId: string, tag: string) => void
   onDelete: (docIds: string[]) => void
   onNameUpdate: (docId: string, newName: string) => void
+  onDocumentClick?: (doc: Document) => void
 }
 
 export function DocumentView({
@@ -25,6 +26,7 @@ export function DocumentView({
   onTagRemove,
   onDelete,
   onNameUpdate,
+  onDocumentClick,
 }: DocumentViewProps) {
   if (documents.length === 0) {
     return (
@@ -42,6 +44,7 @@ export function DocumentView({
     onTagRemove,
     onDelete,
     onNameUpdate,
+    onDocumentClick,
   }
 
   switch (viewMode) {

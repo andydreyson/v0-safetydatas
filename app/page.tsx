@@ -1,9 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Sidebar } from "@/components/sidebar"
 import { DocumentUpload } from "@/components/document-upload"
 import { DocumentView } from "@/components/document-view"
+import { DocumentViewer } from "@/components/document-viewer"
 import { FilterPanel } from "@/components/filter-panel"
 import { IndexScrollView } from "@/components/index-scroll-view"
 import { ActivityStatus, type Activity } from "@/components/activity-status"
@@ -12,8 +15,12 @@ import { GroupAssignDialog } from "@/components/group-assign-dialog"
 import { GroupManager } from "@/components/group-manager"
 import { DashboardStats } from "@/components/dashboard-stats"
 import { QuickActions } from "@/components/quick-actions"
+import { UploadProgress, type UploadStage } from "@/components/upload-progress"
+import { OnboardingGuide } from "@/components/onboarding-guide"
+import { HelpDocumentation } from "@/components/help-documentation"
+import { AccountSettings } from "@/components/account-settings"
 import type { Group } from "@/lib/db"
-import { Home, FileText, Folders, X } from "lucide-react"
+import { Home, FileText, Folders, X, Loader2 } from "lucide-react"
 
 export type Document = {
   id: string
@@ -35,6 +42,10 @@ export type Document = {
 export type ViewMode = "table" | "gallery" | "accordion"
 
 export default function Page() {
+  // Authentication check
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
   const [documents, setDocuments] = useState<Document[]>([])
   const [viewMode, setViewMode] = useState<ViewMode>("table")
   const [searchQuery, setSearchQuery] = useState("")
@@ -57,6 +68,24 @@ export default function Page() {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
   const [groupSelectedDocs, setGroupSelectedDocs] = useState<string[]>([])
 
+  // Document viewer state
+  const [viewerDocument, setViewerDocument] = useState<Document | null>(null)
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
+
+  // Upload progress state
+  const [showUploadProgress, setShowUploadProgress] = useState(false)
+  const [uploadStage, setUploadStage] = useState<UploadStage>("analyzing")
+  const [uploadingFileCount, setUploadingFileCount] = useState(0)
+
+  // Onboarding state
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Help documentation state
+  const [showHelpDocumentation, setShowHelpDocumentation] = useState(false)
+
+  // Account settings state
+  const [showAccountSettings, setShowAccountSettings] = useState(false)
+
   const addActivity = (message: string, type: Activity["type"] = "info") => {
     const newActivity: Activity = {
       id: crypto.randomUUID(),
@@ -65,6 +94,26 @@ export default function Page() {
       timestamp: new Date(),
     }
     setActivities((prev) => [...prev, newActivity])
+  }
+
+  // Onboarding handlers
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('safetydatas-onboarding-completed', 'true')
+    setShowOnboarding(false)
+    addActivity('Welcome to SafetyDatas! 🎉', 'success')
+  }
+
+  const handleOnboardingSkip = () => {
+    localStorage.setItem('safetydatas-onboarding-completed', 'true')
+    setShowOnboarding(false)
+  }
+
+  const handleOpenHelp = () => {
+    setShowHelpDocumentation(true)
+  }
+
+  const handleOpenAccount = () => {
+    setShowAccountSettings(true)
   }
 
   // Load documents from server on mount
@@ -76,12 +125,12 @@ export default function Page() {
           const data = await response.json()
           setDocuments(data.documents || [])
           if (data.documents?.length > 0) {
-            addActivity(`Lastet ${data.documents.length} dokument${data.documents.length > 1 ? 'er' : ''}`, 'success')
+            addActivity(`Loaded ${data.documents.length} document${data.documents.length > 1 ? 's' : ''}`, 'success')
           }
         }
       } catch (error) {
         console.error('Failed to load documents:', error)
-        addActivity('Kunne ikke laste dokumenter', 'error')
+        addActivity('Failed to load documents', 'error')
       } finally {
         setIsLoading(false)
       }
@@ -104,6 +153,39 @@ export default function Page() {
     }
     loadGroups()
   }, [])
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    const hasCompletedOnboarding = localStorage.getItem('safetydatas-onboarding-completed')
+    if (!hasCompletedOnboarding) {
+      // Small delay so the app loads first
+      setTimeout(() => setShowOnboarding(true), 500)
+    }
+  }, [])
+
+  // Redirect if not authenticated (belt-and-suspenders with middleware)
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+
+  // Show loading while checking auth
+  if (status === "loading") {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // If no session, return null (will redirect)
+  if (!session) {
+    return null
+  }
 
   // Check for duplicates based on compound name and file size
   const checkForDuplicates = (docs: Document[]): number => {
@@ -151,24 +233,24 @@ export default function Page() {
     })
 
     if (duplicates.length === 0) {
-      addActivity("Ingen duplikater funnet", "info")
+      addActivity("No duplicates found", "info")
       return
     }
 
     // Show details and ask for confirmation
     const duplicateNames = duplicates.map(d => `- ${d.compoundName} (${d.size})`).join('\n')
     const confirmed = window.confirm(
-      `Fant ${duplicates.length} duplikat${duplicates.length > 1 ? "er" : ""}:\n\n${duplicateNames}\n\nVil du slette disse duplikatene?`
+      `Found ${duplicates.length} duplicate${duplicates.length > 1 ? "s" : ""}:\n\n${duplicateNames}\n\nDo you want to delete these duplicates?`
     )
 
     if (!confirmed) {
-      addActivity("Duplikatsjekk avbrutt", "info")
+      addActivity("Duplicate check cancelled", "info")
       return
     }
 
     // Delete duplicates from database
     try {
-      addActivity(`Sletter ${duplicates.length} duplikater...`, "processing")
+      addActivity(`Deleting ${duplicates.length} duplicate${duplicates.length > 1 ? "s" : ""}...`, "processing")
 
       const duplicateIds = duplicates.map(d => d.id)
       await handleDelete(duplicateIds)
@@ -181,16 +263,16 @@ export default function Page() {
       }))
       setDocuments(cleanedWithPages)
 
-      addActivity(`Fjernet ${duplicates.length} duplikat${duplicates.length > 1 ? "er" : ""}`, "success")
+      addActivity(`Removed ${duplicates.length} duplicate${duplicates.length > 1 ? "s" : ""}`, "success")
     } catch (error) {
       console.error('Duplicate removal error:', error)
-      addActivity('Feil ved sletting av duplikater', 'error')
+      addActivity('Failed to remove duplicates', 'error')
     }
   }
 
   // Manual function to sort alphabetically
   const handleOrganizeAlphabetically = async () => {
-    addActivity("Sorterer alfabetisk...", "processing")
+    addActivity("Sorting alphabetically...", "processing")
 
     try {
       // Sort documents alphabetically
@@ -215,16 +297,16 @@ export default function Page() {
 
       // Update local state
       setDocuments(sortedWithPages)
-      addActivity(`${sortedWithPages.length} dokumenter sortert alfabetisk`, "success")
+      addActivity(`${sortedWithPages.length} documents sorted alphabetically`, "success")
     } catch (error) {
       console.error('Alphabetical sorting error:', error)
-      addActivity('Feil ved alfabetisk sortering', 'error')
+      addActivity('Failed to sort alphabetically', 'error')
     }
   }
 
   // Sync compoundName with name for all documents
   const handleSyncNames = async () => {
-    addActivity("Synkroniserer navn...", "processing")
+    addActivity("Synchronizing names...", "processing")
 
     try {
       let updatedCount = 0
@@ -256,13 +338,13 @@ export default function Page() {
       setDocuments(syncedDocs)
 
       if (updatedCount > 0) {
-        addActivity(`Synkroniserte ${updatedCount} dokument${updatedCount > 1 ? 'er' : ''}`, "success")
+        addActivity(`Synchronized ${updatedCount} document${updatedCount > 1 ? 's' : ''}`, "success")
       } else {
-        addActivity("Alle navn er allerede synkroniserte", "info")
+        addActivity("All names are already synchronized", "info")
       }
     } catch (error) {
       console.error('Sync error:', error)
-      addActivity('Synkronisering feilet', 'error')
+      addActivity('Synchronization failed', 'error')
     }
   }
 
@@ -274,11 +356,11 @@ export default function Page() {
     )
 
     if (pdfDocuments.length === 0) {
-      addActivity("Ingen PDF-filer valgt å redigere. Velg PDF-filer først.", "warning")
+      addActivity("No PDF files selected to edit. Please select PDF files first.", "warning")
       return
     }
 
-    addActivity(`Analyserer ${pdfDocuments.length} dokument${pdfDocuments.length > 1 ? 'er' : ''} med GPT-3.5...`, "processing")
+    addActivity(`Analyzing ${pdfDocuments.length} document${pdfDocuments.length > 1 ? 's' : ''} with GPT-3.5...`, "processing")
 
     try {
       // Send document IDs to server for batch processing
@@ -316,7 +398,7 @@ export default function Page() {
             addActivity(`✓ "${result.originalName}" → "${result.newName}"`, "success")
           } else {
             failedCount++
-            addActivity(`✗ Kunne ikke redigere "${result.originalName}"`, "error")
+            addActivity(`✗ Failed to edit "${result.originalName}"`, "error")
           }
         })
 
@@ -324,18 +406,22 @@ export default function Page() {
         handleOrganizeAlphabetically()
 
         addActivity(
-          `AI-redigering fullført: ${successCount} suksess, ${failedCount} feilet`,
+          `AI editing completed: ${successCount} success, ${failedCount} failed`,
           successCount > 0 ? "success" : "warning"
         )
       }
     } catch (error) {
       console.error('AI renaming error:', error)
-      addActivity('AI-redigering feilet', 'error')
+      addActivity('AI editing failed', 'error')
     }
   }
 
   const handleUpload = async (files: File[]) => {
-    addActivity(`Laster opp ${files.length} fil${files.length > 1 ? "er" : ""}...`, "processing")
+    // Show progress modal
+    setUploadingFileCount(files.length)
+    setShowUploadProgress(true)
+    setUploadStage("analyzing")
+    addActivity(`Analyzing ${files.length} file${files.length > 1 ? "s" : ""}...`, "processing")
 
     try {
       // Extract compound names for all files
@@ -346,9 +432,88 @@ export default function Page() {
         }))
       )
 
-      // Create FormData for upload
-      const formData = new FormData()
+      // Move to checking stage
+      setUploadStage("checking")
+
+      // Check for duplicates BEFORE uploading
+      const potentialDuplicates: Array<{file: File, compoundName: string, existingDoc?: Document}> = []
+      const newFiles: Array<{file: File, compoundName: string}> = []
+
       filesWithCompoundNames.forEach(({ file, compoundName }) => {
+        const key = `${compoundName.toLowerCase()}-${(file.size / 1024).toFixed(2)} KB`
+        const existingDoc = documents.find(doc => {
+          const existingKey = `${doc.compoundName.toLowerCase()}-${doc.size}`
+          return existingKey === key
+        })
+
+        if (existingDoc) {
+          potentialDuplicates.push({ file, compoundName, existingDoc })
+        } else {
+          newFiles.push({ file, compoundName })
+        }
+      })
+
+      // If all files are duplicates, show specific message
+      if (potentialDuplicates.length === files.length) {
+        setShowUploadProgress(false)
+
+        const duplicateList = potentialDuplicates
+          .map(d => `• ${d.compoundName} (${(d.file.size / 1024).toFixed(2)} KB)`)
+          .join('\n')
+
+        addActivity(
+          `All ${files.length} file${files.length > 1 ? 's' : ''} are duplicates and were not uploaded`,
+          'warning'
+        )
+
+        window.alert(
+          `❌ Upload cancelled - Duplicates found!\n\n` +
+          `All ${files.length} file${files.length > 1 ? 's' : ''} you tried to upload already exist in the system:\n\n` +
+          duplicateList +
+          `\n\nThese documents are already in the database and do not need to be uploaded again.`
+        )
+        return
+      }
+
+      // If some files are duplicates, ask user what to do
+      if (potentialDuplicates.length > 0) {
+        setShowUploadProgress(false)
+
+        const duplicateList = potentialDuplicates
+          .map(d => `• ${d.compoundName} (${(d.file.size / 1024).toFixed(2)} KB)`)
+          .join('\n')
+
+        const proceed = window.confirm(
+          `⚠️ Duplicates found!\n\n` +
+          `${potentialDuplicates.length} of ${files.length} file${files.length > 1 ? 's' : ''} are duplicates:\n\n` +
+          duplicateList +
+          `\n\nDo you want to upload the ${newFiles.length} new file${newFiles.length > 1 ? 's' : ''} and skip the duplicates?`
+        )
+
+        if (!proceed) {
+          addActivity('Upload cancelled by user', 'info')
+          return
+        }
+
+        // Resume progress
+        setShowUploadProgress(true)
+        setUploadStage("checking")
+        addActivity(`Skipping ${potentialDuplicates.length} duplicate${potentialDuplicates.length > 1 ? 's' : ''}`, 'warning')
+      }
+
+      // If no new files to upload, return
+      if (newFiles.length === 0) {
+        setShowUploadProgress(false)
+        addActivity('No new files to upload', 'info')
+        return
+      }
+
+      // Create FormData for upload (only new files)
+      setUploadStage("uploading")
+      addActivity(`Uploading ${newFiles.length} new file${newFiles.length > 1 ? 's' : ''}...`, "processing")
+
+      const formData = new FormData()
+      newFiles.forEach(({ file, compoundName }) => {
         formData.append('files', file)
         formData.append(`compoundName_${file.name}`, compoundName)
       })
@@ -360,29 +525,27 @@ export default function Page() {
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Upload failed')
       }
 
       const data = await response.json()
       const uploadedDocs = data.documents.map((doc: Document) => ({
         ...doc,
         qrCode: generateQRCode(doc.compoundName),
-        file: filesWithCompoundNames.find(f => f.file.name === doc.originalName)?.file
+        file: newFiles.find(f => f.file.name === doc.originalName)?.file
       }))
+
+      // Sync to database
+      setUploadStage("syncing")
+      await new Promise(resolve => setTimeout(resolve, 500)) // Small delay to show the syncing stage
 
       // Combine with existing documents
       let allDocuments = [...documents, ...uploadedDocs]
 
-      // Check for duplicates
-      const duplicatesFound = checkForDuplicates(allDocuments)
-      if (duplicatesFound > 0) {
-        addActivity(`Fant og fjernet ${duplicatesFound} duplikat${duplicatesFound > 1 ? "er" : ""}`, "warning")
-        allDocuments = removeDuplicates(allDocuments)
-      }
-
       // Sort all documents alphabetically by compound name
       allDocuments.sort((a, b) => a.compoundName.localeCompare(b.compoundName))
-      addActivity("Dokumenter sortert alfabetisk", "success")
+      addActivity("Documents sorted alphabetically", "success")
 
       // Assign page numbers
       const documentsWithPages = allDocuments.map((doc, index) => ({
@@ -391,10 +554,21 @@ export default function Page() {
       }))
 
       setDocuments(documentsWithPages)
-      addActivity(`${uploadedDocs.length} dokument${uploadedDocs.length > 1 ? "er" : ""} lastet opp`, "success")
+
+      // Show completed stage
+      setUploadStage("completed")
+      await new Promise(resolve => setTimeout(resolve, 1500)) // Show completed for 1.5 seconds
+
+      setShowUploadProgress(false)
+      addActivity(
+        `✓ ${uploadedDocs.length} document${uploadedDocs.length > 1 ? "s" : ""} uploaded${potentialDuplicates.length > 0 ? `, ${potentialDuplicates.length} duplicate${potentialDuplicates.length > 1 ? 's' : ''} skipped` : ''}`,
+        "success"
+      )
     } catch (error) {
       console.error('Upload error:', error)
-      addActivity('Opplasting feilet', 'error')
+      setShowUploadProgress(false)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      addActivity(`Upload failed: ${errorMessage}`, 'error')
     }
   }
 
@@ -553,11 +727,16 @@ export default function Page() {
           compoundName: data.document.compoundName // Update compoundName in state too
         } : doc
       ))
-      addActivity('Dokumentnavn oppdatert', 'success')
+      addActivity('Document name updated', 'success')
     } catch (error) {
       console.error('Update error:', error)
-      addActivity('Oppdatering feilet', 'error')
+      addActivity('Update failed', 'error')
     }
+  }
+
+  const handleDocumentClick = (doc: Document) => {
+    setViewerDocument(doc)
+    setIsViewerOpen(true)
   }
 
   const handleDelete = async (docIds: string[]) => {
@@ -576,10 +755,10 @@ export default function Page() {
 
       setDocuments(documents.filter((doc) => !docIds.includes(doc.id)))
       setSelectedDocuments([])
-      addActivity(`${docIds.length} dokument${docIds.length > 1 ? 'er' : ''} slettet`, 'success')
+      addActivity(`${docIds.length} document${docIds.length > 1 ? 's' : ''} deleted`, 'success')
     } catch (error) {
       console.error('Delete error:', error)
-      addActivity('Sletting feilet', 'error')
+      addActivity('Deletion failed', 'error')
     }
   }
 
@@ -594,7 +773,7 @@ export default function Page() {
   // Group handlers
   const handleCreateGroup = async (name: string, description?: string) => {
     try {
-      addActivity(`Oppretter gruppe "${name}"...`, 'processing')
+      addActivity(`Creating group "${name}"...`, 'processing')
 
       const response = await fetch('/api/groups', {
         method: 'POST',
@@ -616,16 +795,16 @@ export default function Page() {
       setGroups([...groups, data.group])
       setSelectedDocuments([])
       setShowGroupCreateDialog(false)
-      addActivity(`Gruppe "${name}" opprettet med ${selectedDocuments.length} dokument(er)`, 'success')
+      addActivity(`Group "${name}" created with ${selectedDocuments.length} document(s)`, 'success')
     } catch (error) {
       console.error('Error creating group:', error)
-      addActivity('Kunne ikke opprette gruppe', 'error')
+      addActivity('Failed to create group', 'error')
     }
   }
 
   const handleAssignToGroups = async (groupIds: string[]) => {
     try {
-      addActivity(`Tildeler ${selectedDocuments.length} dokument(er) til ${groupIds.length} gruppe(r)...`, 'processing')
+      addActivity(`Assigning ${selectedDocuments.length} document(s) to ${groupIds.length} group(s)...`, 'processing')
 
       for (const groupId of groupIds) {
         const response = await fetch(`/api/groups/${groupId}/documents`, {
@@ -651,10 +830,10 @@ export default function Page() {
       }
 
       setSelectedDocuments([])
-      addActivity(`${selectedDocuments.length} dokument(er) tildelt til ${groupIds.length} gruppe(r)`, 'success')
+      addActivity(`${selectedDocuments.length} document(s) assigned to ${groupIds.length} group(s)`, 'success')
     } catch (error) {
       console.error('Error assigning to groups:', error)
-      addActivity('Kunne ikke tildele til grupper', 'error')
+      addActivity('Failed to assign to groups', 'error')
     }
   }
 
@@ -669,10 +848,10 @@ export default function Page() {
       }
 
       setGroups(groups.filter(g => g.id !== groupId))
-      addActivity('Gruppe slettet', 'success')
+      addActivity('Group deleted', 'success')
     } catch (error) {
       console.error('Error deleting group:', error)
-      addActivity('Kunne ikke slette gruppe', 'error')
+      addActivity('Failed to delete group', 'error')
     }
   }
 
@@ -695,10 +874,10 @@ export default function Page() {
 
       const data = await response.json()
       setGroups(groups.map(g => g.id === groupId ? data.group : g))
-      addActivity(`Gruppe "${name}" oppdatert`, 'success')
+      addActivity(`Group "${name}" updated`, 'success')
     } catch (error) {
       console.error('Error updating group:', error)
-      addActivity('Kunne ikke oppdatere gruppe', 'error')
+      addActivity('Failed to update group', 'error')
     }
   }
 
@@ -725,10 +904,10 @@ export default function Page() {
         setGroups(data.groups || [])
       }
 
-      addActivity('Dokument fjernet fra gruppe', 'success')
+      addActivity('Document removed from group', 'success')
     } catch (error) {
       console.error('Error removing document from group:', error)
-      addActivity('Kunne ikke fjerne dokument fra gruppe', 'error')
+      addActivity('Failed to remove document from group', 'error')
     }
   }
 
@@ -752,7 +931,7 @@ export default function Page() {
   }).length
 
   return (
-    <div className="flex h-screen bg-[#FAFAFA]">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-white">
       <Sidebar
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -771,6 +950,8 @@ export default function Page() {
         onAssignToGroup={() => setShowGroupAssignDialog(true)}
         currentView={currentView}
         onViewChange={setCurrentView}
+        onOpenHelp={handleOpenHelp}
+        onOpenAccount={handleOpenAccount}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -783,8 +964,8 @@ export default function Page() {
                   onClick={() => setCurrentView("dashboard")}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all font-medium ${
                     currentView === "dashboard"
-                      ? "bg-primary text-white shadow-md"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                   }`}
                 >
                   <Home className="h-4 w-4" />
@@ -794,8 +975,8 @@ export default function Page() {
                   onClick={() => setCurrentView("documents")}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all font-medium ${
                     currentView === "documents"
-                      ? "bg-primary text-white shadow-md"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                   }`}
                 >
                   <FileText className="h-4 w-4" />
@@ -805,8 +986,8 @@ export default function Page() {
                   onClick={() => setCurrentView("groups")}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all font-medium ${
                     currentView === "groups"
-                      ? "bg-primary text-white shadow-md"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md hover:shadow-lg hover:shadow-blue-500/50 hover:scale-105"
+                      : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                   }`}
                 >
                   <Folders className="h-4 w-4" />
@@ -890,7 +1071,7 @@ export default function Page() {
                           <div className="flex gap-2">
                             <button
                               onClick={generateGroupQRCode}
-                              className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-all font-medium"
+                              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all font-medium hover:scale-105"
                             >
                               Generate QR Code
                             </button>
@@ -1152,6 +1333,7 @@ export default function Page() {
                   onTagRemove={handleTagRemove}
                   onDelete={handleDelete}
                   onNameUpdate={handleNameUpdate}
+                  onDocumentClick={handleDocumentClick}
                 />
               </div>
             </div>
@@ -1194,6 +1376,33 @@ export default function Page() {
         onDeleteGroup={handleDeleteGroup}
         onEditGroup={handleEditGroup}
       />
+
+      {/* Document Viewer */}
+      <DocumentViewer
+        document={viewerDocument}
+        open={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
+      />
+
+      {/* Upload Progress Modal */}
+      {showUploadProgress && (
+        <UploadProgress stage={uploadStage} fileCount={uploadingFileCount} />
+      )}
+
+      {/* Onboarding Guide - For first-time users */}
+      {showOnboarding && (
+        <OnboardingGuide
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+
+      {/* Help Documentation - Detailed guide */}
+      {showHelpDocumentation && (
+        <HelpDocumentation
+          onClose={() => setShowHelpDocumentation(false)}
+        />
+      )}
     </div>
   )
 }
