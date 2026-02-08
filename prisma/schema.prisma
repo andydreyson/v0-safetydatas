@@ -149,9 +149,42 @@ model Group {
   qrCode      String?
 
   documents   Document[]
+  shareLinks  ShareLink[]
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
+  @@index([userId])
+}
+
+// ============================================
+// Public Share Links (for QR code access)
+// ============================================
+
+model ShareLink {
+  id          String    @id @default(cuid())
+  publicId    String    @unique @default(uuid())
+  
+  groupId     String
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  
+  // Optional password protection
+  password    String?
+  
+  // Access control
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  
+  // Tracking
+  viewCount   Int       @default(0)
+  lastAccessed DateTime?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([publicId])
+  @@index([groupId])
   @@index([userId])
 }

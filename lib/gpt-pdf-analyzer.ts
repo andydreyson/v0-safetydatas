@@ -9,10 +9,19 @@
 
 import OpenAI from 'openai'
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy initialization of OpenAI client
+let openai: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY is not set')
+    }
+    openai = new OpenAI({ apiKey })
+  }
+  return openai
+}
 
 // Dynamic import for PDF.js to avoid server-side issues
 let pdfjsLib: typeof import('pdfjs-dist') | null = null
@@ -79,7 +88,7 @@ ${pdfText.substring(0, 3000)}
 
 Chemical Name:`
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {

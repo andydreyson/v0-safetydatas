@@ -1043,10 +1043,42 @@ export default function Page() {
                     }
                   }
 
-                  const generateGroupQRCode = () => {
-                    const groupUrl = `${window.location.origin}/groups/${group.id}`
-                    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(groupUrl)}`
-                    window.open(qrCodeUrl, '_blank')
+                  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
+                  const [shareLinkUrl, setShareLinkUrl] = useState<string | null>(null)
+
+                  const generateGroupQRCode = async () => {
+                    setIsGeneratingQR(true)
+                    try {
+                      // Create a share link for this group
+                      const response = await fetch('/api/share-links', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          groupId: group.id,
+                        }),
+                      })
+
+                      if (!response.ok) {
+                        throw new Error('Failed to create share link')
+                      }
+
+                      const data = await response.json()
+                      const shareUrl = data.shareLink.url
+                      setShareLinkUrl(shareUrl)
+
+                      // Generate QR code for the share link
+                      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shareUrl)}`
+                      window.open(qrCodeUrl, '_blank')
+
+                      addActivity(`Public share link created for "${group.name}"`, 'success')
+                    } catch (error) {
+                      console.error('Error creating share link:', error)
+                      addActivity('Failed to create share link', 'error')
+                    } finally {
+                      setIsGeneratingQR(false)
+                    }
                   }
 
                   return (
@@ -1071,9 +1103,17 @@ export default function Page() {
                           <div className="flex gap-2">
                             <button
                               onClick={generateGroupQRCode}
-                              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all font-medium hover:scale-105"
+                              disabled={isGeneratingQR}
+                              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all font-medium hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
-                              Generate QR Code
+                              {isGeneratingQR ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  Creating Link...
+                                </>
+                              ) : (
+                                'Generate QR Code'
+                              )}
                             </button>
                             <button
                               onClick={() => {

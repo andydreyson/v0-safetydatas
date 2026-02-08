@@ -9,9 +9,19 @@ import fs from 'fs'
 import path from 'path'
 import pdfParse from 'pdf-parse'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy initialization of OpenAI client
+let openai: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY is not set')
+    }
+    openai = new OpenAI({ apiKey })
+  }
+  return openai
+}
 
 /**
  * Extract text from PDF - THE SIMPLE WAY
@@ -47,7 +57,7 @@ async function getChemicalNameFromText(text: string): Promise<string | null> {
 
     console.log('[Simple GPT] Asking OpenAI for chemical name...')
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {
