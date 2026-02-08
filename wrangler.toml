@@ -1,0 +1,19 @@
+# Cloudflare Pages Configuration
+name = "safetydatas"
+compatibility_date = "2024-02-08"
+compatibility_flags = ["nodejs_compat"]
+
+# Build settings
+[build]
+command = "npm run build"
+output_dir = ".next"
+
+# Environment variables (set these in Cloudflare Dashboard)
+# DATABASE_URL
+# STRIPE_SECRET_KEY
+# STRIPE_STARTER_PRICE_ID
+# STRIPE_PROFESSIONAL_PRICE_ID
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+# NEXTAUTH_SECRET
+# NEXTAUTH_URL
+# NEXT_PUBLIC_APP_URL
