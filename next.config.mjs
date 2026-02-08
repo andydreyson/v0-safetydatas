@@ -12,7 +12,7 @@ const nextConfig = {
   // Fix for pdf-parse and tesseract.js with Turbopack
   serverExternalPackages: ['pdf-parse', 'tesseract.js'],
 
-  // Security Headers
+  // Security Headers (simplified for Cloudflare)
   async headers() {
     return [
       {
@@ -33,26 +33,6 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()'
-          },
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains'
-          },
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://vercel.live",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https:",
-              "font-src 'self'",
-              "connect-src 'self' https://api.stripe.com https://*.vercel.app",
-              "frame-src https://js.stripe.com https://hooks.stripe.com",
-            ].join('; ')
           },
         ],
       },
