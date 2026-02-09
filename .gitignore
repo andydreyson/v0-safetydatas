@@ -39,3 +39,4 @@ next-env.d.ts
 # scripts
 check-duplicates.js
 remove-duplicates.js
+.env*.local
