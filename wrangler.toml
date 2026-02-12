@@ -1,9 +1,0 @@
-# Cloudflare Pages - Static Export Config
-# This file tells Cloudflare how to build and deploy
-
-name = "safetydatas"
-compatibility_date = "2024-02-08"
-compatibility_flags = ["nodejs_compat"]
-
-# Build command will be set in Cloudflare Dashboard
-# or use: wrangler pages deploy .next --project-name=safetydatas

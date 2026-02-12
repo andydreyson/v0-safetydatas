@@ -12,7 +12,7 @@ const nextConfig = {
   // Fix for pdf-parse and tesseract.js with Turbopack
   serverExternalPackages: ['pdf-parse', 'tesseract.js'],
 
-  // Security Headers (simplified for Cloudflare)
+  // Security Headers
   async headers() {
     return [
       {
