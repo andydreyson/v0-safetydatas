@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import Stripe from 'stripe'
 
-const stripe = process.env.STRIPE_SECRET_KEY 
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20.acacia' })
-  : null
+// Lazy initialization of Stripe
+let stripe: Stripe | null = null
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20.acacia' })
+  }
+  return stripe
+}
 
 export async function GET() {
   const checks = {
@@ -46,9 +51,10 @@ export async function GET() {
   }
 
   // Check Stripe
-  if (stripe) {
+  const stripeClient = getStripe()
+  if (stripeClient) {
     try {
-      await stripe.balance.retrieve()
+      await stripeClient.balance.retrieve()
       checks.services.stripe.status = 'healthy'
     } catch (error) {
       checks.services.stripe.status = 'error'
