@@ -7,9 +7,18 @@ import OpenAI from 'openai'
 import fs from 'fs'
 import { createWorker } from 'tesseract.js'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy initialization of OpenAI
+let openai: OpenAI | null = null
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY is not set')
+    }
+    openai = new OpenAI({ apiKey })
+  }
+  return openai
+}
 
 // Norwegian chemical regex patterns (checked first before GPT)
 const CHEMICAL_PATTERNS: { re: RegExp; name: string }[] = [
@@ -99,7 +108,7 @@ async function askGPTForName(extractedText: string): Promise<string | null> {
       ? extractedText.slice(0, 6000) + '\n\n--TRUNCATED--'
       : extractedText
 
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {
