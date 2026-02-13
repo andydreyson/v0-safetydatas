@@ -55,7 +55,7 @@
     "lowdb": "^7.0.1",
     "lucide-react": "^0.454.0",
     "nanoid": "^5.1.6",
-    "next": "16.0.0",
+    "next": "16.0.10",
     "next-auth": "^4.24.13",
     "next-themes": "latest",
     "openai": "^6.18.0",
