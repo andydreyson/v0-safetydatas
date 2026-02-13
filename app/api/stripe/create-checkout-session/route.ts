@@ -4,9 +4,16 @@ import { authOptions } from '@/lib/auth'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
-})
+// Lazy initialization of Stripe
+let stripe: Stripe | null = null
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-11-20.acacia',
+    })
+  }
+  return stripe
+}
 
 export async function POST(request: Request) {
   try {
@@ -28,6 +35,14 @@ export async function POST(request: Request) {
       )
     }
 
+    const stripeClient = getStripe()
+    if (!stripeClient) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 500 }
+      )
+    }
+
     // Get or create Stripe customer
     let subscription = await prisma.subscription.findUnique({
       where: { userId: session.user.id }
@@ -39,7 +54,7 @@ export async function POST(request: Request) {
       customerId = subscription.stripeCustomerId
     } else {
       // Create new Stripe customer
-      const customer = await stripe.customers.create({
+      const customer = await stripeClient.customers.create({
         email: session.user.email,
         metadata: {
           userId: session.user.id
@@ -63,7 +78,7 @@ export async function POST(request: Request) {
     }
 
     // Create checkout session
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const checkoutSession = await stripeClient.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       payment_method_types: ['card'],

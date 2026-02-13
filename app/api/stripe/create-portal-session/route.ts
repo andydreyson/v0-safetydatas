@@ -4,9 +4,16 @@ import { authOptions } from '@/lib/auth'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
-})
+// Lazy initialization
+let stripe: Stripe | null = null
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-11-20.acacia',
+    })
+  }
+  return stripe
+}
 
 export async function POST(request: Request) {
   try {
@@ -24,6 +31,11 @@ export async function POST(request: Request) {
       where: { userId: session.user.id }
     })
 
+    const stripeClient = getStripe()
+    if (!stripeClient) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+    }
+
     if (!subscription?.stripeCustomerId) {
       return NextResponse.json(
         { error: 'No subscription found. Please subscribe first.' },
@@ -32,7 +44,7 @@ export async function POST(request: Request) {
     }
 
     // Create Stripe Customer Portal session
-    const portalSession = await stripe.billingPortal.sessions.create({
+    const portalSession = await stripeClient.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
       return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?tab=account`,
     })

@@ -3,20 +3,32 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
-})
+// Lazy initialization
+let stripe: Stripe | null = null
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-11-20.acacia',
+    })
+  }
+  return stripe
+}
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: Request) {
+  const stripeClient = getStripe()
+  if (!stripeClient) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+  }
+
   const body = await request.text()
   const signature = (await headers()).get('stripe-signature')!
 
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    event = stripeClient.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (error: any) {
     console.error(`Webhook signature verification failed:`, error.message)
     return NextResponse.json(
