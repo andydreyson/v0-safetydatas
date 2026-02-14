@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import Stripe from 'stripe'
-import { prisma } from '@/lib/prisma'
 
 // Lazy initialization of Stripe
 let stripe: Stripe | null = null
@@ -13,6 +12,16 @@ function getStripe() {
     })
   }
   return stripe
+}
+
+// Lazy initialization of Prisma
+let prisma: any = null
+async function getPrisma() {
+  if (!prisma) {
+    const { prisma: p } = await import('@/lib/prisma')
+    prisma = p
+  }
+  return prisma
 }
 
 export async function POST(request: Request) {
@@ -38,43 +47,59 @@ export async function POST(request: Request) {
     const stripeClient = getStripe()
     if (!stripeClient) {
       return NextResponse.json(
-        { error: 'Stripe not configured' },
+        { error: 'Stripe not configured - check STRIPE_SECRET_KEY' },
         { status: 500 }
       )
     }
 
-    // Get or create Stripe customer
-    let subscription = await prisma.subscription.findUnique({
-      where: { userId: session.user.id }
-    })
+    // Log for debugging
+    console.log('Creating checkout with priceId:', priceId)
 
     let customerId: string
 
-    if (subscription?.stripeCustomerId) {
-      customerId = subscription.stripeCustomerId
-    } else {
-      // Create new Stripe customer
+    try {
+      // Try to get existing customer from database
+      const db = await getPrisma()
+      const existingSub = await db.subscription.findUnique({
+        where: { userId: session.user.id }
+      })
+
+      if (existingSub?.stripeCustomerId) {
+        customerId = existingSub.stripeCustomerId
+        console.log('Using existing customer:', customerId)
+      } else {
+        // Create new Stripe customer
+        const customer = await stripeClient.customers.create({
+          email: session.user.email || undefined,
+          metadata: {
+            userId: session.user.id
+          }
+        })
+        customerId = customer.id
+        console.log('Created new customer:', customerId)
+
+        // Save to database
+        await db.subscription.upsert({
+          where: { userId: session.user.id },
+          create: {
+            userId: session.user.id,
+            stripeCustomerId: customerId,
+            planName: planName,
+            status: 'incomplete',
+          },
+          update: {
+            stripeCustomerId: customerId
+          }
+        })
+      }
+    } catch (dbError) {
+      // If DB fails, still create checkout without saving
+      console.warn('DB error, creating customer without saving:', dbError)
       const customer = await stripeClient.customers.create({
-        email: session.user.email,
-        metadata: {
-          userId: session.user.id
-        }
+        email: session.user.email || undefined,
+        metadata: { userId: session.user.id }
       })
       customerId = customer.id
-
-      // Save customer ID to database
-      subscription = await prisma.subscription.upsert({
-        where: { userId: session.user.id },
-        create: {
-          userId: session.user.id,
-          stripeCustomerId: customerId,
-          planName: planName,
-          status: 'incomplete',
-        },
-        update: {
-          stripeCustomerId: customerId
-        }
-      })
     }
 
     // Create checkout session
@@ -88,8 +113,8 @@ export async function POST(request: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://safetydatas.com'}/?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://safetydatas.com'}/pricing?canceled=true`,
       metadata: {
         userId: session.user.id,
         planName: planName,
@@ -102,6 +127,7 @@ export async function POST(request: Request) {
       }
     })
 
+    console.log('Checkout session created:', checkoutSession.id)
     return NextResponse.json({ url: checkoutSession.url })
 
   } catch (error: any) {

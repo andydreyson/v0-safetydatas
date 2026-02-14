@@ -19,6 +19,13 @@ export default function PricingPage() {
       return
     }
 
+    // Check if using placeholder price ID
+    if (priceId === "price_starter" || priceId === "price_professional") {
+      setError("⚠️ Stripe not configured yet. See STRIPE_TEST_SETUP.md in the repo. Create test products in Stripe Dashboard first!")
+      setLoadingPlan(null)
+      return
+    }
+
     setLoadingPlan(planName)
     setError("")
 
@@ -92,10 +99,22 @@ export default function PricingPage() {
           </p>
         </div>
 
+        {/* Test Mode Warning */}
+        {(!process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID || 
+          process.env.NEXT_PUBLIC_STRIPE_STARTER_PRICE_ID?.includes('price_starter')) && (
+          <div className="max-w-4xl mx-auto mb-8 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800">
+              <p className="font-semibold">⚠️ Test Mode</p>
+              <p>Stripe is not fully configured. See STRIPE_TEST_SETUP.md to enable payments.</p>
+            </div>
+          </div>
+        )}
+
         {error && (
           <div className="max-w-4xl mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
+            <p className="text-sm text-red-800 whitespace-pre-wrap">{error}</p>
           </div>
         )}
 
