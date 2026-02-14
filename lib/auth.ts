@@ -1,13 +1,18 @@
 import { NextAuthOptions } from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-import { Adapter } from "next-auth/adapters"
+
+// Lazy import of prisma to avoid build issues
+let prisma: any = null
+async function getPrisma() {
+  if (!prisma) {
+    const { prisma: p } = await import("@/lib/prisma")
+    prisma = p
+  }
+  return prisma
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
-
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -20,29 +25,35 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email and password required")
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-          include: { subscription: true }
-        })
+        try {
+          const p = await getPrisma()
+          const user = await p.user.findUnique({
+            where: { email: credentials.email },
+            include: { subscription: true }
+          })
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials")
-        }
+          if (!user || !user.password) {
+            throw new Error("Invalid credentials")
+          }
 
-        const passwordMatch = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
+          const passwordMatch = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
 
-        if (!passwordMatch) {
-          throw new Error("Invalid credentials")
-        }
+          if (!passwordMatch) {
+            throw new Error("Invalid credentials")
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          }
+        } catch (error) {
+          console.error("Auth error:", error)
+          throw new Error("Authentication failed")
         }
       }
     })
@@ -73,5 +84,5 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
 
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-build",
 }

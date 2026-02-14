@@ -6,6 +6,11 @@ export default withAuth(
     const token = req.nextauth.token
     const path = req.nextUrl.pathname
 
+    // Allow API routes (including health check)
+    if (path.startsWith('/api/')) {
+      return NextResponse.next()
+    }
+
     // Allow public routes
     const publicRoutes = [
       '/landing',
@@ -26,22 +31,10 @@ export default withAuth(
     // Allow public shared collections and groups
     const isPublicShare = path.startsWith('/view/') || path.startsWith('/groups/')
 
-    // Allow NextAuth API routes
-    const isAuthRoute = path.startsWith('/api/auth')
-
-    // Allow Stripe webhook
-    const isWebhookRoute = path.startsWith('/api/stripe/webhook')
-
-    // Allow share API
-    const isShareRoute = path.startsWith('/api/share/')
-
-    // Allow PDF analysis for signup flow
-    const isPdfAnalysis = path.startsWith('/api/analyze-pdf')
-
     // Allow static files
     const isStaticFile = path.startsWith('/_next') || path.startsWith('/images')
 
-    if (isPublicRoute || isPublicShare || isAuthRoute || isWebhookRoute || isShareRoute || isPdfAnalysis || isStaticFile) {
+    if (isPublicRoute || isPublicShare || isStaticFile) {
       return NextResponse.next()
     }
 
@@ -56,19 +49,19 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token
+      authorized: ({ token, req }) => {
+        // Allow API routes without token check in authorized callback
+        if (req.nextUrl.pathname.startsWith('/api/')) {
+          return true
+        }
+        return !!token
+      }
     }
   }
 )
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ]
 }

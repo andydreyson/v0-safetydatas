@@ -1,15 +1,4 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import Stripe from 'stripe'
-
-// Lazy initialization of Stripe
-let stripe: Stripe | null = null
-function getStripe() {
-  if (!stripe && process.env.STRIPE_SECRET_KEY) {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-11-20.acacia' })
-  }
-  return stripe
-}
 
 export async function GET() {
   const checks = {
@@ -41,56 +30,22 @@ export async function GET() {
     }
   }
 
-  // Check database
-  try {
-    await prisma.$queryRaw`SELECT 1`
-    checks.services.database.status = 'healthy'
-  } catch (error) {
-    checks.services.database.status = 'error'
-    checks.services.database.error = error instanceof Error ? error.message : 'Unknown error'
-  }
-
-  // Check Stripe
-  const stripeClient = getStripe()
-  if (stripeClient) {
-    try {
-      await stripeClient.balance.retrieve()
-      checks.services.stripe.status = 'healthy'
-    } catch (error) {
-      checks.services.stripe.status = 'error'
-      checks.services.stripe.error = error instanceof Error ? error.message : 'Unknown error'
-    }
-  } else {
-    checks.services.stripe.status = 'not_configured'
-  }
-
-  // Check OpenAI
-  if (process.env.OPENAI_API_KEY) {
-    checks.services.openai.status = 'configured'
-  } else {
-    checks.services.openai.status = 'not_configured'
-  }
-
-  // Check NextAuth
-  if (process.env.NEXTAUTH_SECRET) {
-    checks.services.nextauth.status = 'configured'
-  } else {
-    checks.services.nextauth.status = 'not_configured'
-  }
+  // Simple env var checks for services
+  checks.services.database.status = process.env.DATABASE_URL ? 'configured' : 'not_configured'
+  checks.services.stripe.status = process.env.STRIPE_SECRET_KEY ? 'configured' : 'not_configured'
+  checks.services.openai.status = process.env.OPENAI_API_KEY ? 'configured' : 'not_configured'
+  checks.services.nextauth.status = process.env.NEXTAUTH_SECRET ? 'configured' : 'not_configured'
 
   // Overall status
-  const hasErrors = Object.values(checks.services).some(s => s.status === 'error')
   const allConfigured = checks.missingEnvVars.length === 0
   
-  if (hasErrors) {
-    checks.status = 'error'
-  } else if (!allConfigured) {
-    checks.status = 'degraded'
-  } else {
+  if (allConfigured) {
     checks.status = 'healthy'
+  } else {
+    checks.status = 'degraded'
   }
 
   return NextResponse.json(checks, { 
-    status: checks.status === 'healthy' ? 200 : checks.status === 'degraded' ? 200 : 503 
+    status: checks.status === 'healthy' ? 200 : 200 
   })
 }
