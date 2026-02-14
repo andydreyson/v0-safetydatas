@@ -163,13 +163,6 @@ export default function Page() {
     }
   }, [])
 
-  // Redirect if not authenticated (belt-and-suspenders with middleware)
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login")
-    }
-  }, [status, router])
-
   // Show loading while checking auth
   if (status === "loading") {
     return (
@@ -182,8 +175,9 @@ export default function Page() {
     )
   }
 
-  // If no session, return null (will redirect)
+  // If no session, redirect to landing page
   if (!session) {
+    router.push("/landing")
     return null
   }
 
