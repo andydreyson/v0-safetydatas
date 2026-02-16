@@ -45,30 +45,30 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Hero Content */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-full">
-                <Shield className="h-4 w-4 text-red-600" />
-                <span className="text-sm font-medium text-red-700">OSHA fines start at $13,653 per violation</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full">
+                <Check className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">No more messy paper binders</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Get OSHA-Ready in{" "}
+                Organize Your Chemical Papers in{" "}
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">10 Minutes</span>
               </h1>
 
               <p className="text-xl text-gray-600 leading-relaxed">
-                Stop drowning in paper binders. Upload your safety data sheets, get an 
-                A-Z index + QR code access for your team. Pass inspections. Sleep better.
+                Got a shelf full of messy product sheets? Dump them all here. 
+                We'll sort them A-Z and give you a QR code so your team can find any sheet instantly.
               </p>
 
-              {/* Value Props - Pain Focused */}
+              {/* Value Props - Simple Language */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 p-1 bg-red-100 rounded">
-                    <Shield className="h-4 w-4 text-red-600" />
+                  <div className="mt-1 p-1 bg-green-100 rounded">
+                    <Check className="h-4 w-4 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Avoid $13K+ OSHA Fines</p>
-                    <p className="text-sm text-gray-600">Stay compliant, pass inspections</p>
+                    <p className="font-semibold text-gray-900">Find Any Sheet in 2 Seconds</p>
+                    <p className="text-sm text-gray-600">Scan the QR code, get what you need</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -76,17 +76,8 @@ export default function LandingPage() {
                     <Clock className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Save 5+ Hours/Month</p>
-                    <p className="text-sm text-gray-600">No more manual organizing</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 p-1 bg-green-100 rounded">
-                    <QrCode className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Instant QR Code Access</p>
-                    <p className="text-sm text-gray-600">Staff finds any sheet in 2 seconds</p>
+                    <p className="font-semibold text-gray-900">Save Hours Every Month</p>
+                    <p className="text-sm text-gray-600">No more digging through folders</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -94,8 +85,17 @@ export default function LandingPage() {
                     <Printer className="h-4 w-4 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Print-Ready for Inspectors</p>
-                    <p className="text-sm text-gray-600">Professional A4 index in one click</p>
+                    <p className="font-semibold text-gray-900">Ready for Inspections</p>
+                    <p className="text-sm text-gray-600">Print a clean index in one click</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-1 bg-amber-100 rounded">
+                    <Shield className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Avoid Big Government Fines</p>
+                    <p className="text-sm text-gray-600">Stay organized, stay safe</p>
                   </div>
                 </div>
               </div>

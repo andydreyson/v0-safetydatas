@@ -17,21 +17,21 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'SafetyDatas - Simple SDS Management for SMBs',
-  description: 'Organize safety data sheets in minutes. Avoid OSHA fines. Upload your PDFs, get an A-Z index + QR code access. $15/mo. Perfect for auto shops, clinics & salons.',
-  keywords: 'safety data sheet management, SDS organizer, OSHA compliance, chemical data sheets, stoffkartotek, sikkerhetsdatablad',
+  title: 'SafetyDatas - Organize Your Chemical Product Sheets',
+  description: 'Got messy chemical product sheets? Upload them all, get them organized A-Z, and share with your team via QR code. Perfect for auto shops, clinics, salons & more.',
+  keywords: 'chemical product sheets, safety data sheets, organize product information, QR code for chemical sheets, small business chemical records',
   generator: 'SafetyDatas.com',
   openGraph: {
-    title: 'SafetyDatas - Simple SDS Management for Small Businesses',
-    description: 'Organize safety data sheets in minutes. Upload PDFs, get A-Z index + QR codes. $15/mo.',
+    title: 'SafetyDatas - Organize Your Chemical Product Sheets',
+    description: 'Upload your messy product sheets. Get them organized A-Z with QR code access.',
     url: 'https://safetydatas.com',
     siteName: 'SafetyDatas',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SafetyDatas - Simple SDS Management',
-    description: 'Organize safety data sheets in minutes. $15/mo.',
+    title: 'SafetyDatas - Organize Your Chemical Product Sheets',
+    description: 'Upload your product sheets. Get them organized A-Z with QR code access.',
   },
   alternates: {
     canonical: 'https://safetydatas.com',
