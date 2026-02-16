@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Mail, Lock, User, Building, Loader2, AlertCircle, Check } from "lucide-react"
+import { Mail, Lock, User, Building, Loader2, AlertCircle, Check, Shield } from "lucide-react"
 import Image from "next/image"
 
 export default function SignupPage() {
