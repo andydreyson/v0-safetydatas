@@ -124,6 +124,10 @@ export default function LandingPage() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Check className="h-4 w-4 text-green-600" />
+                  No credit card required
+                </span>
+                <span className="flex items-center gap-1">
+                  <Check className="h-4 w-4 text-green-600" />
                   Cancel anytime
                 </span>
               </p>
@@ -351,7 +355,7 @@ export default function LandingPage() {
               you need organized safety documentation
             </p>
             <Link
-              href="/dashboard"
+              href="/signup"
               className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-lg font-semibold hover:shadow-xl hover:shadow-blue-500/50 transition-all"
             >
               Start Organizing Today
@@ -408,7 +412,7 @@ export default function LandingPage() {
 
           <div className="text-center mt-12">
             <Link
-              href="/dashboard"
+              href="/signup"
               className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-lg font-semibold hover:shadow-xl hover:shadow-blue-500/50 transition-all"
             >
               Get Started Today
@@ -471,7 +475,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full text-center px-6 py-3 bg-gray-100 text-gray-900 rounded-lg font-semibold hover:bg-gray-200 transition-all"
               >
                 Get Started
@@ -519,7 +523,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Link
-                href="/dashboard"
+                href="/signup"
                 className="block w-full text-center px-6 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-lg"
               >
                 Get Started
@@ -864,7 +868,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Link
-              href="/dashboard"
+              href="/signup"
               className="inline-flex items-center gap-2 px-10 py-5 bg-white text-blue-600 rounded-xl text-lg font-bold hover:bg-gray-100 transition-all hover:scale-105 shadow-2xl"
             >
               Get Started Now

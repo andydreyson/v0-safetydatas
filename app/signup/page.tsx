@@ -85,6 +85,7 @@ export default function SignupPage() {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
           <p className="text-gray-600">Start organizing your safety data sheets</p>
+          <p className="text-sm text-green-600 mt-2 font-medium">✓ No credit card required</p>
         </div>
 
         {/* Signup Form */}
@@ -195,6 +196,27 @@ export default function SignupPage() {
               )}
             </Button>
           </form>
+
+          {/* Trust Badges */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <Lock className="h-3 w-3 text-green-600" />
+                256-bit SSL encryption
+              </span>
+              <span className="flex items-center gap-1">
+                <Check className="h-3 w-3 text-green-600" />
+                GDPR Compliant
+              </span>
+              <span className="flex items-center gap-1">
+                <Shield className="h-3 w-3 text-green-600" />
+                Cancel anytime
+              </span>
+            </div>
+            <p className="text-center text-xs text-gray-400 mt-3">
+              No credit card required to start
+            </p>
+          </div>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
