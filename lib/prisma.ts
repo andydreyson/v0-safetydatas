@@ -1,24 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 const createPrismaClient = () => {
-  // Use adapter in production, direct client in development
-  if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL })
-    const adapter = new PrismaPg(pool)
-    return new PrismaClient({ 
-      adapter,
-      log: ['query'],
-    })
-  }
-  
   return new PrismaClient({
-    log: ['query'],
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 }
 
