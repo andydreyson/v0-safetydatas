@@ -11,8 +11,9 @@ export function middleware(request: NextRequest) {
 
   // Allow public routes
   const publicRoutes = [
+    '/',
     '/landing',
-    '/login', 
+    '/login',
     '/signup',
     '/pricing',
     '/about',

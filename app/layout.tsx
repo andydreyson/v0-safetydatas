@@ -17,9 +17,25 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'SafetyData - Chemical Safety Data Sheet Manager',
-  description: 'Modern chemical safety data sheet management with AI-powered organization',
-  generator: 'SafetyData.com',
+  title: 'SafetyDatas - Simple SDS Management for SMBs',
+  description: 'Organize safety data sheets in minutes. Avoid OSHA fines. Upload your PDFs, get an A-Z index + QR code access. $15/mo. Perfect for auto shops, clinics & salons.',
+  keywords: 'safety data sheet management, SDS organizer, OSHA compliance, chemical data sheets, stoffkartotek, sikkerhetsdatablad',
+  generator: 'SafetyDatas.com',
+  openGraph: {
+    title: 'SafetyDatas - Simple SDS Management for Small Businesses',
+    description: 'Organize safety data sheets in minutes. Upload PDFs, get A-Z index + QR codes. $15/mo.',
+    url: 'https://safetydatas.com',
+    siteName: 'SafetyDatas',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SafetyDatas - Simple SDS Management',
+    description: 'Organize safety data sheets in minutes. $15/mo.',
+  },
+  alternates: {
+    canonical: 'https://safetydatas.com',
+  },
   icons: {
     icon: [
       {

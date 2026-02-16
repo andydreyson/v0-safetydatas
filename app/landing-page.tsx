@@ -24,10 +24,10 @@ export default function LandingPage() {
               <a href="#faq" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">FAQs</a>
             </div>
             <Link
-              href="/dashboard"
+              href="/signup"
               className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all hover:scale-105"
             >
-              Get Started
+              Start Free Trial
             </Link>
           </div>
         </div>
@@ -45,57 +45,57 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Hero Content */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full">
-                <Star className="h-4 w-4 text-blue-600 fill-blue-600" />
-                <span className="text-sm font-medium text-blue-700">Simple data sheet organization</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-full">
+                <Shield className="h-4 w-4 text-red-600" />
+                <span className="text-sm font-medium text-red-700">OSHA fines start at $13,653 per violation</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Organize Chemical Data Sheets in{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Minutes, Not Hours</span>
+                Get OSHA-Ready in{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">10 Minutes</span>
               </h1>
 
               <p className="text-xl text-gray-600 leading-relaxed">
-                Upload your chemical data sheets, and we'll organize them into a searchable alphabetical
-                index in minutes. Perfect for teams who need quick access to their safety documentation.
+                Stop drowning in paper binders. Upload your safety data sheets, get an 
+                A-Z index + QR code access for your team. Pass inspections. Sleep better.
               </p>
 
-              {/* Value Props */}
+              {/* Value Props - Pain Focused */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 p-1 bg-green-100 rounded">
-                    <Check className="h-4 w-4 text-green-600" />
+                  <div className="mt-1 p-1 bg-red-100 rounded">
+                    <Shield className="h-4 w-4 text-red-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Automatic Extraction</p>
-                    <p className="text-sm text-gray-600">Extract compound names from filenames</p>
+                    <p className="font-semibold text-gray-900">Avoid $13K+ OSHA Fines</p>
+                    <p className="text-sm text-gray-600">Stay compliant, pass inspections</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-1 bg-blue-100 rounded">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Save 5+ Hours/Month</p>
+                    <p className="text-sm text-gray-600">No more manual organizing</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 p-1 bg-green-100 rounded">
-                    <Check className="h-4 w-4 text-green-600" />
+                    <QrCode className="h-4 w-4 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Instant Indexing</p>
-                    <p className="text-sm text-gray-600">A-Z organization in one click</p>
+                    <p className="font-semibold text-gray-900">Instant QR Code Access</p>
+                    <p className="text-sm text-gray-600">Staff finds any sheet in 2 seconds</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 p-1 bg-green-100 rounded">
-                    <Check className="h-4 w-4 text-green-600" />
+                  <div className="mt-1 p-1 bg-purple-100 rounded">
+                    <Printer className="h-4 w-4 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Print-Ready Exports</p>
-                    <p className="text-sm text-gray-600">Professional A4 layouts for filing</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 p-1 bg-green-100 rounded">
-                    <Check className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Team Access</p>
-                    <p className="text-sm text-gray-600">Share with your team via QR codes</p>
+                    <p className="font-semibold text-gray-900">Print-Ready for Inspectors</p>
+                    <p className="text-sm text-gray-600">Professional A4 index in one click</p>
                   </div>
                 </div>
               </div>
@@ -103,10 +103,10 @@ export default function LandingPage() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/dashboard"
+                  href="/signup"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg text-lg font-semibold hover:shadow-xl hover:shadow-blue-500/50 transition-all hover:scale-105"
                 >
-                  Get Started
+                  Start Free Trial — No Card Required
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
@@ -117,8 +117,19 @@ export default function LandingPage() {
                 </a>
               </div>
 
-              <p className="text-sm text-gray-500">
-                Cancel anytime • Simple pricing
+              <p className="text-sm text-gray-500 flex items-center gap-4">
+                <span className="flex items-center gap-1">
+                  <Check className="h-4 w-4 text-green-600" />
+                  14-day free trial
+                </span>
+                <span className="flex items-center gap-1">
+                  <Check className="h-4 w-4 text-green-600" />
+                  No credit card required
+                </span>
+                <span className="flex items-center gap-1">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Cancel anytime
+                </span>
               </p>
             </div>
 
@@ -142,7 +153,7 @@ export default function LandingPage() {
                       ))}
                     </div>
                     <p className="text-sm text-gray-700">
-                      <span className="font-semibold">Trusted by professionals</span> across industries
+                      <span className="font-semibold">Perfect for auto shops, clinics & salons</span>
                     </p>
                   </div>
                 </div>
