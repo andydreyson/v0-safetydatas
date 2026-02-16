@@ -96,13 +96,30 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(sanitizedData.password, 12)
 
-    // Create user with sanitized data
+    // Create user with sanitized data and trial subscription
+    const trialEnd = new Date()
+    trialEnd.setDate(trialEnd.getDate() + 14) // 14-day free trial
+
     const user = await prisma.user.create({
       data: {
         name: sanitizedData.name,
         email: sanitizedData.email,
         password: hashedPassword,
         company: sanitizedData.company || null,
+        subscription: {
+          create: {
+            stripeCustomerId: `trial_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`, // Temporary ID for trial users
+            planName: "Starter",
+            status: "trialing",
+            trialEnd: trialEnd,
+            documentsLimit: 100,
+            groupsLimit: 5,
+            usersLimit: 1,
+          }
+        }
+      },
+      include: {
+        subscription: true
       }
     })
 
@@ -113,6 +130,11 @@ export async function POST(request: Request) {
           id: user.id,
           name: user.name,
           email: user.email,
+        },
+        subscription: {
+          planName: user.subscription?.planName,
+          status: user.subscription?.status,
+          trialEnd: user.subscription?.trialEnd,
         }
       },
       { status: 201 }

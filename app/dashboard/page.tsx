@@ -19,6 +19,9 @@ import { UploadProgress, type UploadStage } from "@/components/upload-progress"
 import { OnboardingGuide } from "@/components/onboarding-guide"
 import { HelpDocumentation } from "@/components/help-documentation"
 import { AccountSettings } from "@/components/account-settings"
+import { PaywallModal } from "@/components/paywall-modal"
+import { UpgradeBanner } from "@/components/upgrade-banner"
+import { useSubscription } from "@/lib/hooks/use-subscription"
 import type { Group } from "@/lib/db"
 import { Home, FileText, Folders, X, Loader2 } from "lucide-react"
 
@@ -45,6 +48,20 @@ export default function Page() {
   // Authentication check
   const { data: session, status } = useSession()
   const router = useRouter()
+
+  // Subscription check
+  const { subscription, isLoading: isSubscriptionLoading, hasActiveSubscription, isInTrial, isPastDue, getTrialDaysLeft } = useSubscription()
+  const [showPaywall, setShowPaywall] = useState(false)
+
+  // Check subscription status after loading
+  useEffect(() => {
+    if (!isSubscriptionLoading && subscription) {
+      if (!hasActiveSubscription()) {
+        // Show paywall immediately if no active subscription
+        setShowPaywall(true)
+      }
+    }
+  }, [isSubscriptionLoading, subscription, hasActiveSubscription])
 
   const [documents, setDocuments] = useState<Document[]>([])
   const [viewMode, setViewMode] = useState<ViewMode>("table")
@@ -924,9 +941,47 @@ export default function Page() {
     return uploadDate >= sevenDaysAgo
   }).length
 
+  // Determine which banner to show
+  const getBannerVariant = () => {
+    if (isInTrial()) return { variant: "trial" as const, daysLeft: getTrialDaysLeft() }
+    if (isPastDue()) return { variant: "past_due" as const, daysLeft: 0 }
+    if (subscription?.status === "canceled" || subscription?.status === "incomplete") {
+      return { variant: "expired" as const, daysLeft: 0 }
+    }
+    // Show upgrade banner for active subscribers on Starter plan
+    if (subscription?.planName === "Starter" && hasActiveSubscription()) {
+      return { variant: "upgrade" as const, daysLeft: 0 }
+    }
+    return null
+  }
+
+  const bannerInfo = getBannerVariant()
+
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-white">
-      <Sidebar
+    <>
+      {/* Paywall Modal - shown when no active subscription */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={hasActiveSubscription() ? () => setShowPaywall(false) : undefined}
+        title={isInTrial() ? "Your Trial is Ending Soon" : "Subscribe to Continue"}
+        description={isInTrial() 
+          ? "Your free trial is ending. Subscribe now to keep full access to all features."
+          : "Subscribe to access all features and manage your safety data sheets."
+        }
+      />
+
+      {/* Upgrade Banner - shown at top of page */}
+      {bannerInfo && (
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <UpgradeBanner
+            variant={bannerInfo.variant}
+            daysLeft={bannerInfo.daysLeft}
+          />
+        </div>
+      )}
+
+      <div className={`flex h-screen bg-gradient-to-br from-gray-50 to-white ${bannerInfo ? 'pt-14' : ''}`}>
+        <Sidebar
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         selectedCount={selectedDocuments.length}
@@ -1438,5 +1493,6 @@ export default function Page() {
         />
       )}
     </div>
+    </>
   )
 }
