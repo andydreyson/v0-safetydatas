@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { LayoutGrid, Table, List, Download, Tag, Trash2, FileText, BookOpen, Printer, Copy, ArrowUpAZ, Sparkles, RefreshCw, FolderPlus, Folders, Home, Shield, HelpCircle, User, LogOut } from "lucide-react"
+import { LayoutGrid, Table, List, Download, Tag, Trash2, FileText, BookOpen, Printer, Copy, ArrowUpAZ, Sparkles, RefreshCw, FolderPlus, Folders, Home, HelpCircle, User, LogOut } from "lucide-react"
+import Image from "next/image"
 import { signOut } from "next-auth/react"
 import type { ViewMode, Document } from "@/app/page"
 import type { Group } from "@/lib/db"
@@ -68,9 +69,7 @@ export function Sidebar({
       {/* Logo Card */}
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
         <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-3 rounded-xl">
-            <Shield className="h-6 w-6 text-white" />
-          </div>
+          <Image src="/images/logo.svg" alt="SafetyDatas" width={48} height={48} className="w-12 h-12" />
           <div>
             <span className="font-bold text-xl bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               SafetyDatas

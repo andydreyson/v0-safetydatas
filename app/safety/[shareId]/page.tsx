@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import {
   FileText,
-  Shield,
   AlertCircle,
   Lock,
   Eye,
@@ -15,6 +14,7 @@ import {
   Building2,
   Calendar,
 } from "lucide-react"
+import Image from "next/image"
 
 interface Document {
   id: string
@@ -196,9 +196,7 @@ export default function PublicSharePage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Shield className="h-6 w-6 text-white" />
-            </div>
+            <Image src="/images/logo.svg" alt="SafetyDatas" width={40} height={40} className="w-10 h-10" />
             <div>
               <h1 className="text-xl font-bold text-gray-900">
                 Safety Data Sheets

@@ -1,6 +1,7 @@
 "use client"
 
-import { X, Upload, FileText, Folders, Printer, QrCode, Search, Tag, Trash2, Edit, ArrowUpAZ, Copy, RefreshCw, Sparkles, Shield, CheckCircle, Download } from "lucide-react"
+import { X, Upload, FileText, Folders, Printer, QrCode, Search, Tag, Trash2, Edit, ArrowUpAZ, Copy, RefreshCw, Sparkles, CheckCircle, Download } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 type HelpDocumentationProps = {
@@ -22,7 +23,7 @@ export function HelpDocumentation({ onClose }: HelpDocumentationProps) {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8 rounded-t-3xl">
           <div className="flex items-center gap-3 mb-4">
-            <Shield className="h-10 w-10" />
+            <Image src="/images/logo.svg" alt="SafetyDatas" width={48} height={48} className="w-12 h-12" />
             <h1 className="text-4xl font-bold">SafetyDatas Help & Documentation</h1>
           </div>
           <p className="text-blue-100 text-lg">Complete guide to using SafetyDatas for managing chemical safety data sheets</p>

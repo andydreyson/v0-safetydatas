@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Shield, Check, Loader2, AlertCircle } from "lucide-react"
+import { Check, Loader2, AlertCircle } from "lucide-react"
+import Image from "next/image"
 
 export default function PricingPage() {
   const { data: session } = useSession()
@@ -59,9 +60,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/landing" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
+              <Image src="/images/logo.svg" alt="SafetyDatas" width={40} height={40} className="w-10 h-10" />
               <span className="text-xl font-bold text-gray-900">SafetyDatas</span>
             </Link>
 

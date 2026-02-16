@@ -1,0 +1,21 @@
+{
+  "name": "SafetyDatas",
+  "short_name": "SafetyDatas",
+  "description": "Organize your chemical product sheets. Pass inspections.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

@@ -17,9 +17,7 @@ export default function AutoRepairPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-700 p-2 rounded-lg">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
+              <Image src="/images/logo.svg" alt="SafetyDatas" width={40} height={40} className="w-10 h-10" />
               <span className="text-2xl font-bold text-gray-900">SafetyDatas</span>
             </Link>
             <Link href="/signup" className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all">

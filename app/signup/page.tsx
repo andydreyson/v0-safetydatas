@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Shield, Mail, Lock, User, Building, Loader2, AlertCircle, Check } from "lucide-react"
+import { Mail, Lock, User, Building, Loader2, AlertCircle, Check } from "lucide-react"
+import Image from "next/image"
 
 export default function SignupPage() {
   const router = useRouter()
@@ -80,9 +81,9 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         {/* Logo/Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-4 shadow-lg">
-            <Shield className="h-8 w-8 text-white" />
-          </div>
+          <Link href="/" className="inline-block">
+            <Image src="/images/logo.svg" alt="SafetyDatas" width={64} height={64} className="w-16 h-16 mb-4" />
+          </Link>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
           <p className="text-gray-600">Start organizing your safety data sheets</p>
           <p className="text-sm text-green-600 mt-2 font-medium">✓ No credit card required</p>

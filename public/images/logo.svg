@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Shield shape -->
+  <path d="M256 480 L48 320 L48 80 L464 80 L464 320 Z" fill="#2563EB" stroke="#1D4ED8" stroke-width="12"/>
+  <!-- Inner highlight -->
+  <path d="M256 460 L64 312 L64 96 L448 96 L448 312 Z" fill="#3B82F6"/>
+  <!-- S letter -->
+  <text x="256" y="340" font-family="Arial, Helvetica, sans-serif" font-size="260" font-weight="bold" fill="white" text-anchor="middle">S</text>
+</svg>
