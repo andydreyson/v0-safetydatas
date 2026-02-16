@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   const checks = {
     timestamp: new Date().toISOString(),
     status: 'checking',
     services: {
-      database: { status: 'unknown', error: null },
+      database: { status: 'unknown', error: null as string | null },
       stripe: { status: 'unknown', error: null },
       openai: { status: 'unknown', error: null },
       nextauth: { status: 'unknown', error: null },
@@ -30,14 +31,21 @@ export async function GET() {
     }
   }
 
-  // Simple env var checks for services
-  checks.services.database.status = process.env.DATABASE_URL ? 'configured' : 'not_configured'
+  // Test actual database connection
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    checks.services.database.status = 'connected'
+  } catch (error: any) {
+    checks.services.database.status = 'error'
+    checks.services.database.error = error?.message || 'Failed to connect to database'
+  }
+
   checks.services.stripe.status = process.env.STRIPE_SECRET_KEY ? 'configured' : 'not_configured'
   checks.services.openai.status = process.env.OPENAI_API_KEY ? 'configured' : 'not_configured'
   checks.services.nextauth.status = process.env.NEXTAUTH_SECRET ? 'configured' : 'not_configured'
 
   // Overall status
-  const allConfigured = checks.missingEnvVars.length === 0
+  const allConfigured = checks.missingEnvVars.length === 0 && checks.services.database.status === 'connected'
   
   if (allConfigured) {
     checks.status = 'healthy'
