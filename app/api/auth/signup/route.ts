@@ -121,9 +121,13 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Signup error:', error)
 
-    // TEMPORARY: Show actual error for debugging
+    // Generic error message in production
+    const message = process.env.NODE_ENV === 'production'
+      ? 'An error occurred during signup. Please try again.'
+      : error?.message || 'Failed to create user'
+
     return NextResponse.json(
-      { error: error?.message || 'Failed to create user', details: error?.stack },
+      { error: message },
       { status: 500 }
     )
   }
